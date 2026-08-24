@@ -1,9 +1,12 @@
 package com.bigchadguys.bigshopguys;
 
+import com.bigchadguys.bigshopguys.block.ModBlockEntities;
+import com.bigchadguys.bigshopguys.block.ModBlocks;
 import com.bigchadguys.bigshopguys.shop.ShopDefinition;
 import com.bigchadguys.bigshopguys.shop.ShopRegistries;
 import com.bigchadguys.bigshopguys.shop.recipe.ModShopRecipes;
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.core.Registry;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,6 +27,8 @@ public class BigShopGuys {
         modEventBus.addListener(ShopRegistries::register);
         ModShopRecipes.RECIPE_TYPES.register(modEventBus);
         ModShopRecipes.RECIPE_SERIALIZERS.register(modEventBus);
+        ModBlocks.BLOCKS.register(modEventBus);
+        ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         NeoForge.EVENT_BUS.register(this);
 
         // modEventBus.addListener(this::addCreative);
