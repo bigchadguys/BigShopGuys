@@ -1,0 +1,13 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="bigshopguys"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="${mod_authors}"
+description='''${mod_description}'''
+logoFile="assets/bigshopguys/icon_256.png"
+
+#[[dependencies.bigshopguys]]

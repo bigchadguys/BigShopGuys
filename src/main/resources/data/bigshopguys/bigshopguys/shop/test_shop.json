@@ -1,0 +1,14 @@
+{
+  "title":{
+    "translate": "shop.bigshopguys.test_shop"
+  },
+  "display": {
+    "icon": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "settings": {
+    "allow_bulk_purchase": true,
+    "show_player_inventory": true
+  }
+}
