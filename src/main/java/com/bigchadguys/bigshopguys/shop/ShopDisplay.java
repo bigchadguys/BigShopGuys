@@ -1,4 +1,4 @@
-package com.bigchadguys.shop;
+package com.bigchadguys.bigshopguys.shop;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

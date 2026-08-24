@@ -1,4 +1,4 @@
-package com.bigchadguys.shop;
+package com.bigchadguys.bigshopguys.shop;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -16,10 +16,10 @@ public record ShopDefinition (
                         .fieldOf("title")
                         .forGetter(ShopDefinition::Title),
                 ShopDisplay.CODEC
-                        .fieldOf("display")
+                        .optionalFieldOf("display", ShopDisplay.DEFAULT)
                         .forGetter(ShopDefinition::display),
                 ShopSettings.CODEC
-                        .fieldOf("settings")
+                        .optionalFieldOf("settings", ShopSettings.DEFAULT)
                         .forGetter(ShopDefinition::settings)
             ).apply(instance, ShopDefinition::new));
 }

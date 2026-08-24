@@ -3,9 +3,7 @@
     "translate": "shop.bigshopguys.test_shop"
   },
   "display": {
-    "icon": {
-      "item": "minecraft:diamond"
-    }
+    "icon": "minecraft:diamond"
   },
   "settings": {
     "allow_bulk_purchase": true,

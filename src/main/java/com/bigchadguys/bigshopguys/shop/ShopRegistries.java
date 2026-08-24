@@ -1,4 +1,4 @@
-package com.bigchadguys.shop;
+package com.bigchadguys.bigshopguys.shop;
 
 import com.bigchadguys.bigshopguys.BigShopGuys;
 import net.minecraft.core.Registry;

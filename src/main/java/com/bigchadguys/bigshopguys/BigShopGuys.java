@@ -1,7 +1,7 @@
 package com.bigchadguys.bigshopguys;
 
-import com.bigchadguys.shop.ShopDefinition;
-import com.bigchadguys.shop.ShopRegistries;
+import com.bigchadguys.bigshopguys.shop.ShopDefinition;
+import com.bigchadguys.bigshopguys.shop.ShopRegistries;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.Registry;
 import net.neoforged.bus.api.IEventBus;

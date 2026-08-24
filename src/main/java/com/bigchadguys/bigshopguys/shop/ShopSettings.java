@@ -1,4 +1,4 @@
-package com.bigchadguys.shop;
+package com.bigchadguys.bigshopguys.shop;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -16,10 +16,10 @@ public record ShopSettings(
     public static final Codec<ShopSettings> CODEC =
             RecordCodecBuilder.create(instance -> instance.group(
                 Codec.BOOL
-                        .optionalFieldOf("allowBulkPurchase", true)
+                        .optionalFieldOf("allow_bulk_purchase", true)
                         .forGetter(ShopSettings::allowBulkPurchase),
                 Codec.BOOL
-                        .optionalFieldOf("showPlayerInventory", true)
+                        .optionalFieldOf("show_player_inventory", true)
                         .forGetter(ShopSettings::showPlayerInventory)
             ).apply(instance, ShopSettings::new));
 }
