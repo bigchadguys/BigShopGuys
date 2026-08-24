@@ -1,0 +1,16 @@
+{
+  "type": "bigshopguys:shop_trade",
+  "shop": "bigshopguys:test_shop",
+  "costs": [
+    {
+      "ingredient": {
+        "item": "minecraft:emerald"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "id": "minecraft:bread",
+    "count": 8
+  }
+}

@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 
 public record ShopDefinition (
-    Component Title,
+    Component title,
     ShopDisplay display,
     ShopSettings settings
 ) {
@@ -14,7 +14,7 @@ public record ShopDefinition (
             RecordCodecBuilder.create(instance -> instance.group(
                 ComponentSerialization.CODEC
                         .fieldOf("title")
-                        .forGetter(ShopDefinition::Title),
+                        .forGetter(ShopDefinition::title),
                 ShopDisplay.CODEC
                         .optionalFieldOf("display", ShopDisplay.DEFAULT)
                         .forGetter(ShopDefinition::display),

@@ -2,6 +2,7 @@ package com.bigchadguys.bigshopguys;
 
 import com.bigchadguys.bigshopguys.shop.ShopDefinition;
 import com.bigchadguys.bigshopguys.shop.ShopRegistries;
+import com.bigchadguys.bigshopguys.shop.recipe.ModShopRecipes;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.Registry;
 import net.neoforged.bus.api.IEventBus;
@@ -21,7 +22,8 @@ public class BigShopGuys {
     public BigShopGuys(IEventBus modEventBus, ModContainer modContainer)
     {
         modEventBus.addListener(ShopRegistries::register);
-
+        ModShopRecipes.RECIPE_TYPES.register(modEventBus);
+        ModShopRecipes.RECIPE_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.register(this);
 
         // modEventBus.addListener(this::addCreative);
@@ -47,7 +49,26 @@ public class BigShopGuys {
             LOGGER.info(
                     "Loaded shop {} -> {}",
                     entry.getKey().location(),
-                    entry.getValue().Title().getString()
+                    entry.getValue().title().getString()
+            );
+        });
+
+        var trades = event.getServer()
+                .getRecipeManager()
+                .getAllRecipesFor(
+                        ModShopRecipes.SHOP_TRADE_RECIPE_TYPE.get()
+                );
+
+        LOGGER.info(
+                "Loaded {} Big Shop Guys Trades",
+                trades.size()
+        );
+
+        trades.forEach(holder -> {
+            LOGGER.info(
+                    "Loaded trade {} for shop {}",
+                    holder.id(),
+                    holder.value().shop()
             );
         });
     }
