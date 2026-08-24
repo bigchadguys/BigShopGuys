@@ -1,4 +1,4 @@
-package com.mayview.practicemod;
+package com.bigchadguys.bigshopguys;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -16,16 +16,15 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(Mayviewmod.MOD_ID)
-public class Mayviewmod {
-    public static final String MOD_ID = "somemayviewmod";
+@Mod(BigShopGuys.MOD_ID)
+public class BigShopGuys {
+    public static final String MOD_ID = "bigshopguys";
     private static final Logger LOGGER = LogUtils.getLogger();
 
     // The constructor for the mod class is the first code run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
-    public Mayviewmod(IEventBus modEventBus, ModContainer modContainer)
+    public BigShopGuys(IEventBus modEventBus, ModContainer modContainer)
     {
-        // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
         // Register ourselves for server and other game events we are interested in.
@@ -64,7 +63,7 @@ public class Mayviewmod {
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
     public static class ClientModEvents
     {
         @SubscribeEvent

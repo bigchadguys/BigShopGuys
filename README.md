@@ -1,7 +1,7 @@
-# Mayview Neoforge Intellij Template
+# Big Shop Guys
 
-- Preconfigured Intellij IDEA project template for Mayview development using NeoForge 21.1.172.
+- Custom shop framework aimed to provide a simple and easy to use block entity for 'trades'
 ---
 ## Supported Versions
 - Minecraft 1.21.1
-- NeoForge 21.1.172
+- NeoForge 21.1.234
