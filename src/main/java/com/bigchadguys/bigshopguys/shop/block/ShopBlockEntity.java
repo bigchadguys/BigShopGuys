@@ -36,20 +36,20 @@ public class ShopBlockEntity extends BlockEntity {
         super.saveAdditional(tag, registries);
 
         if(shopId != null) {
-            tag.putString("shopId", shopId.toString());
+            tag.putString("shop_Id", shopId.toString());
         }
     }
 
     @Override
     protected void loadAdditional(
             @NotNull CompoundTag tag,
-            HolderLookup.Provider registries
+            HolderLookup.@NotNull Provider registries
     ) {
         super.loadAdditional(tag, registries);
 
-        if (tag.contains("shopId")) {
+        if (tag.contains("shop_Id")) {
             shopId = ResourceLocation.tryParse(
-                    tag.getString("shopId")
+                    tag.getString("shop_Id")
             );
         } else {
             shopId = null;
