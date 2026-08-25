@@ -1,4 +1,5 @@
 {
   "shop.bigshopguys.test_shop": "Thee Shop of Wonders"
-  "shop.bigshopguys.missing_shop_id": "This Shop has no Shop ID"
+  "shop.bigshopguys.missing_shop_id": "This Shop has no Shop ID",
+  "shop.bigshopguys.successful_trade_entry": "BigShopGuys Trade Successful"
 }

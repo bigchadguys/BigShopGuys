@@ -3,6 +3,7 @@ package com.bigchadguys.bigshopguys;
 import com.bigchadguys.bigshopguys.block.ModBlockEntities;
 import com.bigchadguys.bigshopguys.block.ModBlocks;
 import com.bigchadguys.bigshopguys.component.ModDataComponents;
+import com.bigchadguys.bigshopguys.datagen.DataGenerators;
 import com.bigchadguys.bigshopguys.item.ModItems;
 import com.bigchadguys.bigshopguys.shop.ShopDefinition;
 import com.bigchadguys.bigshopguys.shop.ShopRegistries;
@@ -27,6 +28,7 @@ public class BigShopGuys {
     public BigShopGuys(IEventBus modEventBus, ModContainer modContainer)
     {
         modEventBus.addListener(ShopRegistries::register);
+        modEventBus.addListener(DataGenerators::gatherData);
         ModShopRecipes.RECIPE_TYPES.register(modEventBus);
         ModShopRecipes.RECIPE_SERIALIZERS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
