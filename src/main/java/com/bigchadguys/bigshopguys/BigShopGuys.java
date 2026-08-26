@@ -10,7 +10,6 @@ import com.bigchadguys.bigshopguys.shop.ShopDefinition;
 import com.bigchadguys.bigshopguys.shop.ShopRegistries;
 import com.bigchadguys.bigshopguys.shop.recipe.ModShopRecipes;
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.core.Registry;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
