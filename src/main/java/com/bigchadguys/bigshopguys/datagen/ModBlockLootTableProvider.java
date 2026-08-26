@@ -1,10 +1,12 @@
 package com.bigchadguys.bigshopguys.datagen;
 
 import com.bigchadguys.bigshopguys.block.ModBlocks;
+import com.bigchadguys.bigshopguys.component.ModDataComponents;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -17,7 +19,20 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
-        dropSelf(ModBlocks.SHOP.get());
+        add(
+                ModBlocks.SHOP.get(),
+
+                createSingleItemTable(ModBlocks.SHOP.get())
+                        .apply(
+                                CopyComponentsFunction
+                                        .copyComponents(
+                                                CopyComponentsFunction.Source.BLOCK_ENTITY
+                                        )
+                                        .include(
+                                                ModDataComponents.SHOP_ID.get()
+                                        )
+                        )
+        );
     }
 
     @Override

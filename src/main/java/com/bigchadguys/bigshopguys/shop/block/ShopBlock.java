@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -95,6 +96,20 @@ public class ShopBlock extends Block implements EntityBlock {
                 Component.translatable("shop.bigshopguys.successful_trade_entry"),
                 false
         );
+
+        if (!level.isClientSide
+                && player instanceof ServerPlayer serverPlayer) {
+
+            serverPlayer.openMenu(
+                    shopBlockEntity,
+                    buffer -> {
+                        buffer.writeBlockPos(pos);
+                        buffer.writeResourceLocation(shopId);
+                    }
+            );
+
+            return InteractionResult.CONSUME;
+        }
 
         return InteractionResult.SUCCESS;
     }

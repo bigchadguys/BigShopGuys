@@ -5,6 +5,7 @@ import com.bigchadguys.bigshopguys.block.ModBlocks;
 import com.bigchadguys.bigshopguys.component.ModDataComponents;
 import com.bigchadguys.bigshopguys.datagen.DataGenerators;
 import com.bigchadguys.bigshopguys.item.ModItems;
+import com.bigchadguys.bigshopguys.menu.ModMenus;
 import com.bigchadguys.bigshopguys.shop.ShopDefinition;
 import com.bigchadguys.bigshopguys.shop.ShopRegistries;
 import com.bigchadguys.bigshopguys.shop.recipe.ModShopRecipes;
@@ -33,6 +34,7 @@ public class BigShopGuys {
         ModShopRecipes.RECIPE_SERIALIZERS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
+        ModMenus.MENUS.register(modEventBus);
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         NeoForge.EVENT_BUS.register(this);
