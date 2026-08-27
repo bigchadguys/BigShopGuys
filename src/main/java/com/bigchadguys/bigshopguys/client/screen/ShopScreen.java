@@ -18,6 +18,9 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     private static final int VISIBLE_TRADE_ROWS = 4;
     private static final int TRADE_ROW_HEIGHT = 24;
     private static final int TRADE_START_Y = 62;
+    private static final int BUY_BUTTON_X = 132;
+    private static final int BUY_BUTTON_WIDTH = 32;
+    private static final int BUY_BUTTON_HEIGHT = 16;
 
     private int scrollOffset = 0;
 
@@ -126,7 +129,112 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                     TRADE_START_Y
                             + (visibleRow * TRADE_ROW_HEIGHT)
             );
+
+            renderBuyButton(
+                    graphics,
+                    BUY_BUTTON_X,
+                    TRADE_START_Y + (visibleRow * TRADE_ROW_HEIGHT),
+                    mouseX,
+                    mouseY
+            );
         }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0) {
+            var trades = getTrades();
+
+            int localMouseX =
+                    (int) mouseX - this.leftPos;
+
+            int localMouseY =
+                    (int) mouseY - this.topPos;
+
+            int endIndex = Math.min(
+                    scrollOffset + VISIBLE_TRADE_ROWS,
+                    trades.size()
+            );
+
+            for (int i = scrollOffset; i < endIndex; i++) {
+
+                int visibleRow = i - scrollOffset;
+
+                int buttonY =
+                        TRADE_START_Y
+                                + (visibleRow * TRADE_ROW_HEIGHT);
+
+                boolean clicked =
+                        localMouseX >= BUY_BUTTON_X
+                                && localMouseX
+                                < BUY_BUTTON_X + BUY_BUTTON_WIDTH
+                                && localMouseY >= buttonY
+                                && localMouseY
+                                < buttonY + BUY_BUTTON_HEIGHT;
+
+                if (clicked) {
+                    var holder = trades.get(i);
+
+                    if (minecraft.player != null) {
+                        minecraft.player.displayClientMessage(
+                                Component.literal(
+                                        "Clicked trade: "
+                                                + holder.id()
+                                ),
+                                false
+                        );
+                    }
+
+                    return true;
+                }
+            }
+        }
+
+        return super.mouseClicked(
+                mouseX,
+                mouseY,
+                button
+        );
+    }
+
+    private void renderBuyButton(
+            GuiGraphics graphics,
+            int x,
+            int y,
+            int mouseX,
+            int mouseY
+    ) {
+        boolean hovered =
+                mouseX >= x
+                        && mouseX < x + BUY_BUTTON_WIDTH
+                        && mouseY >= y
+                        && mouseY < y + BUY_BUTTON_HEIGHT;
+
+        int background =
+                hovered ? 0xFF606060 : 0xFF404040;
+
+        graphics.fill(
+                x,
+                y,
+                x + BUY_BUTTON_WIDTH,
+                y + BUY_BUTTON_HEIGHT,
+                background
+        );
+
+        String text = "BUY";
+
+        int textX =
+                x + (BUY_BUTTON_WIDTH
+                        - this.font.width(text)) / 2;
+
+        graphics.drawString(
+                this.font,
+                text,
+                textX,
+                y + 4,
+                0xFFFFFF,
+                false
+        );
     }
 
     private void renderTradeRow(
