@@ -1,6 +1,7 @@
 package com.bigchadguys.bigshopguys.client.screen;
 
 import com.bigchadguys.bigshopguys.menu.ShopMenu;
+import com.bigchadguys.bigshopguys.network.BuyTradePayload;
 import com.bigchadguys.bigshopguys.shop.recipe.ModShopRecipes;
 import com.bigchadguys.bigshopguys.shop.recipe.ShopTradeRecipe;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -175,15 +177,12 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 if (clicked) {
                     var holder = trades.get(i);
 
-                    if (minecraft.player != null) {
-                        minecraft.player.displayClientMessage(
-                                Component.literal(
-                                        "Clicked trade: "
-                                                + holder.id()
-                                ),
-                                false
-                        );
-                    }
+                    PacketDistributor.sendToServer(
+                            new BuyTradePayload(
+                                    menu.getShopPos(),
+                                    holder.id()
+                            )
+                    );
 
                     return true;
                 }

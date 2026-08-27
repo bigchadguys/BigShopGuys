@@ -6,6 +6,7 @@ import com.bigchadguys.bigshopguys.component.ModDataComponents;
 import com.bigchadguys.bigshopguys.datagen.DataGenerators;
 import com.bigchadguys.bigshopguys.item.ModItems;
 import com.bigchadguys.bigshopguys.menu.ModMenus;
+import com.bigchadguys.bigshopguys.network.ModNetworking;
 import com.bigchadguys.bigshopguys.shop.ShopDefinition;
 import com.bigchadguys.bigshopguys.shop.ShopRegistries;
 import com.bigchadguys.bigshopguys.shop.recipe.ModShopRecipes;
@@ -23,7 +24,7 @@ import org.slf4j.Logger;
 public class BigShopGuys {
 
     public static final String MOD_ID = "bigshopguys";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public BigShopGuys(IEventBus modEventBus, ModContainer modContainer)
     {
@@ -36,6 +37,7 @@ public class BigShopGuys {
         ModMenus.MENUS.register(modEventBus);
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
+        modEventBus.addListener(ModNetworking::register);
         NeoForge.EVENT_BUS.register(this);
 
         // modEventBus.addListener(this::addCreative);
