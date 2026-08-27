@@ -1,6 +1,7 @@
 package com.bigchadguys.bigshopguys.network;
 
 import com.bigchadguys.bigshopguys.BigShopGuys;
+import com.bigchadguys.bigshopguys.shop.transaction.ShopTransactionService;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
@@ -43,11 +44,55 @@ public record BuyTradePayload(
             return;
         }
 
+        var validatedTrade =
+                ShopTransactionService.validateTradeRequest(
+                        player,
+                        payload.shopPos(),
+                        payload.recipeId()
+                );
+
+        if (validatedTrade.isEmpty()) {
+
+            BigShopGuys.LOGGER.warn(
+                    "Rejected shop trade request from {}: {} at {}",
+                    player.getName().getString(),
+                    payload.recipeId(),
+                    payload.shopPos()
+            );
+
+            return;
+        }
+
         BigShopGuys.LOGGER.info(
-                "Player {} clicked trade {} at shop {}",
-                player.getName().getString(),
+                "Validated trade {} for player {} at shop {}",
                 payload.recipeId(),
+                player.getName().getString(),
                 payload.shopPos()
+        );
+
+        var trade = validatedTrade.get();
+
+        boolean paymentConsumed =
+                ShopTransactionService.consumePayment(
+                        player,
+                        trade
+                );
+
+        if (!paymentConsumed) {
+
+            BigShopGuys.LOGGER.info(
+                    "Player {} could not pay for trade {}",
+                    player.getName().getString(),
+                    payload.recipeId()
+            );
+
+            return;
+        }
+
+        BigShopGuys.LOGGER.info(
+                "Player {} successfully paid for trade {}",
+                player.getName().getString(),
+                payload.recipeId()
         );
     }
 
