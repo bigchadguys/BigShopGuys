@@ -92,11 +92,6 @@ public class ShopBlock extends Block implements EntityBlock {
                 )
                 .count();
 
-        player.displayClientMessage(
-                Component.translatable("shop.bigshopguys.successful_trade_entry"),
-                false
-        );
-
         if (!level.isClientSide
                 && player instanceof ServerPlayer serverPlayer) {
 

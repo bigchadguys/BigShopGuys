@@ -1,0 +1,22 @@
+{
+  "type": "bigshopguys:shop_trade",
+  "shop": "bigshopguys:test_shop",
+  "costs": [
+    {
+      "ingredient": {
+        "item": "minecraft:emerald"
+      },
+      "count": 4
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "minecraft:golden_apple",
+    "count": 1
+  }
+}
