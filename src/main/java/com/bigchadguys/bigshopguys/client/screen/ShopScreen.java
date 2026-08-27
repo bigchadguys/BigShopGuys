@@ -8,7 +8,10 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
 
@@ -48,6 +51,26 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         );
     }
 
+    private List<RecipeHolder<ShopTradeRecipe>> getTrades() {
+        assert minecraft != null;
+        if (minecraft.level == null) {
+            return List.of();
+        }
+
+        return minecraft.level
+                .getRecipeManager()
+                .getAllRecipesFor(
+                        ModShopRecipes.SHOP_TRADE_RECIPE_TYPE.get()
+                )
+                .stream()
+                .filter(holder ->
+                        holder.value()
+                                .shop()
+                                .equals(menu.getShopId())
+                )
+                .toList();
+    }
+
     @Override
     protected void renderLabels(
             @NotNull GuiGraphics graphics,
@@ -75,18 +98,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         );
 
         // Get all trades belonging to this shop
-        var trades = minecraft.level
-                .getRecipeManager()
-                .getAllRecipesFor(
-                        ModShopRecipes.SHOP_TRADE_RECIPE_TYPE.get()
-                )
-                .stream()
-                .filter(holder ->
-                        holder.value()
-                                .shop()
-                                .equals(menu.getShopId())
-                )
-                .toList();
+        var trades = getTrades();
 
         // Trade count
         graphics.drawString(
@@ -97,10 +109,6 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 0xFFFFFF,
                 false
         );
-
-        // Draw every trade
-        int tradeStartY = 62;
-        int tradeSpacing = 24;
 
         int endIndex = Math.min(
                 scrollOffset + VISIBLE_TRADE_ROWS,
@@ -199,5 +207,178 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 currentX,
                 y
         );
+    }
+
+    @Override
+    public boolean mouseScrolled(
+            double mouseX,
+            double mouseY,
+            double scrollX,
+            double scrollY
+    ) {
+        var trades = getTrades();
+
+        int maxScrollOffset = Math.max(
+                0,
+                trades.size() - VISIBLE_TRADE_ROWS
+        );
+
+        // Mouse wheel down
+        if (scrollY < 0) {
+            scrollOffset = Math.min(
+                    scrollOffset + 1,
+                    maxScrollOffset
+            );
+        }
+
+        // Mouse wheel up
+        else if (scrollY > 0) {
+            scrollOffset = Math.max(
+                    scrollOffset - 1,
+                    0
+            );
+        }
+
+        return true;
+    }
+
+    @Override
+    public void render(
+            @NotNull GuiGraphics graphics,
+            int mouseX,
+            int mouseY,
+            float partialTick
+    ) {
+        super.render(
+                graphics,
+                mouseX,
+                mouseY,
+                partialTick
+        );
+
+        renderTradeTooltips(
+                graphics,
+                mouseX,
+                mouseY
+        );
+    }
+
+    private void renderTradeTooltips(
+            GuiGraphics graphics,
+            int mouseX,
+            int mouseY
+    ) {
+        var trades = getTrades();
+
+        int endIndex = Math.min(
+                scrollOffset + VISIBLE_TRADE_ROWS,
+                trades.size()
+        );
+
+        for (int i = scrollOffset; i < endIndex; i++) {
+
+            int visibleRow = i - scrollOffset;
+
+            int rowX = this.leftPos + 12;
+
+            int rowY = this.topPos
+                    + TRADE_START_Y
+                    + (visibleRow * TRADE_ROW_HEIGHT);
+
+            ItemStack hoveredStack =
+                    getHoveredTradeStack(
+                            trades.get(i).value(),
+                            rowX,
+                            rowY,
+                            mouseX,
+                            mouseY
+                    );
+
+            if (!hoveredStack.isEmpty()) {
+
+                graphics.renderTooltip(
+                        this.font,
+                        hoveredStack,
+                        mouseX,
+                        mouseY
+                );
+
+                return;
+            }
+        }
+    }
+
+    private ItemStack getHoveredTradeStack(
+            ShopTradeRecipe trade,
+            int x,
+            int y,
+            double mouseX,
+            double mouseY
+    ) {
+        int currentX = x;
+
+        // Check every cost
+        for (int i = 0; i < trade.costs().size(); i++) {
+
+            var cost = trade.costs().get(i);
+
+            ItemStack[] possibleStacks =
+                    cost.ingredient().getItems();
+
+            if (possibleStacks.length == 0) {
+                continue;
+            }
+
+            ItemStack costStack =
+                    possibleStacks[0].copy();
+
+            costStack.setCount(cost.count());
+
+            if (isMouseOverItem(
+                    mouseX,
+                    mouseY,
+                    currentX,
+                    y
+            )) {
+                return costStack;
+            }
+
+            // Same movement used by renderTradeRow()
+            currentX += 24;
+
+            if (i < trade.costs().size() - 1) {
+                currentX += 14;
+            }
+        }
+
+        // Skip past the arrow
+        currentX += 22;
+
+        // Check result
+        ItemStack resultStack =
+                trade.result().copy();
+
+        if (isMouseOverItem(
+                mouseX,
+                mouseY,
+                currentX,
+                y
+        )) {
+            return resultStack;
+        }
+
+        return ItemStack.EMPTY;
+    }
+
+    private boolean isMouseOverItem(
+            double mouseX,
+            double mouseY,
+            int itemX,
+            int itemY
+    ) {
+        return mouseX >= itemX
+                && mouseX < itemX + 16
+                && mouseY >= itemY
+                && mouseY < itemY + 16;
     }
 }
