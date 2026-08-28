@@ -69,11 +69,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     }
 
     @Override
-    protected void renderLabels(
-            @NotNull GuiGraphics graphics,
-            int mouseX,
-            int mouseY
-    ) {
+    protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
         int localMouseX =
                 mouseX - this.leftPos;
         int localMouseY =
@@ -187,6 +183,11 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
 
                 if (clicked) {
                     var holder = trades.get(i);
+                    var trade = holder.value();
+
+                    if(!canClientAfford(trade)) {
+                        return true;
+                    }
 
                     PacketDistributor.sendToServer(
                             new BuyTradePayload(
@@ -207,14 +208,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         );
     }
 
-    private void renderBuyButton(
-            GuiGraphics graphics,
-            int x,
-            int y,
-            int mouseX,
-            int mouseY,
-            boolean canAfford
-    ) {
+    private void renderBuyButton(GuiGraphics graphics, int x, int y, int mouseX, int mouseY, boolean canAfford) {
         boolean hovered =
                 mouseX >= x
                         && mouseX < x + BUY_BUTTON_WIDTH
@@ -377,6 +371,54 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 mouseX,
                 mouseY
         );
+
+        renderBuyButtonTooltips(
+                graphics,
+                mouseX,
+                mouseY
+        );
+    }
+
+    private void renderBuyButtonTooltips(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
+        var trades = getTrades();
+
+        int endIndex = Math.min(
+                scrollOffset + VISIBLE_TRADE_ROWS,
+                trades.size()
+        );
+
+        for (int i = scrollOffset; i < endIndex; i++) {
+            int visibleRow = i - scrollOffset;
+            var trade = trades.get(i).value();
+
+            if(canClientAfford(trade)) {
+                continue;
+            }
+
+            int buttonX = this.leftPos + BUY_BUTTON_X;
+
+            int buttonY =
+                    this.topPos
+                    + TRADE_START_Y
+                    + (visibleRow * TRADE_ROW_HEIGHT);
+
+            boolean hovered =
+                    mouseX >= buttonX
+                    && mouseX < buttonX + BUY_BUTTON_WIDTH
+                    && mouseY >= buttonY
+                    && mouseY < buttonY + BUY_BUTTON_HEIGHT;
+
+            if (hovered) {
+                graphics.renderTooltip(
+                        this.font,
+                        Component.literal("You cannot afford this trade"),
+                        mouseX,
+                        mouseY
+                );
+
+                return;
+            }
+        }
     }
 
     private void renderTradeTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
