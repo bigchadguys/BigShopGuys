@@ -2,6 +2,7 @@ package com.bigchadguys.bigshopguys.shop.transaction;
 
 import com.bigchadguys.bigshopguys.shop.recipe.ShopTradeRecipe;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -21,10 +22,10 @@ public record ShopPaymentPlan(
      * This method does NOT modify the player's real inventory.
      */
     public static Optional<ShopPaymentPlan> create(
-            ServerPlayer player,
+            Inventory inventory,
             ShopTradeRecipe trade
     ) {
-        var inventory = player.getInventory().items;
+        var items = inventory.items;
 
         /*
          * This represents how many items in each real
@@ -34,14 +35,14 @@ public record ShopPaymentPlan(
          * actual ItemStacks.
          */
         int[] remainingPerSlot =
-                new int[inventory.size()];
+                new int[items.size()];
 
         for (int slot = 0;
-             slot < inventory.size();
+             slot < items.size();
              slot++) {
 
             remainingPerSlot[slot] =
-                    inventory.get(slot).getCount();
+                    items.get(slot).getCount();
         }
 
         List<PaymentEntry> entries =
@@ -56,12 +57,12 @@ public record ShopPaymentPlan(
                     cost.count();
 
             for (int slot = 0;
-                 slot < inventory.size()
+                 slot < items.size()
                          && amountNeeded > 0;
                  slot++) {
 
                 ItemStack stack =
-                        inventory.get(slot);
+                        items.get(slot);
 
                 if (stack.isEmpty()) {
                     continue;

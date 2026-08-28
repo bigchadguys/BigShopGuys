@@ -4,6 +4,7 @@ import com.bigchadguys.bigshopguys.menu.ShopMenu;
 import com.bigchadguys.bigshopguys.network.BuyTradePayload;
 import com.bigchadguys.bigshopguys.shop.recipe.ModShopRecipes;
 import com.bigchadguys.bigshopguys.shop.recipe.ShopTradeRecipe;
+import com.bigchadguys.bigshopguys.shop.transaction.ShopPaymentPlan;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -52,7 +53,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 y,
                 x + this.imageWidth,
                 y + this.imageHeight,
-                0xCC202020
+                0xFF202020
         );
     }
 
@@ -124,6 +125,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
 
             int visibleRow = i - scrollOffset;
 
+
             renderTradeRow(
                     graphics,
                     trades.get(i).value(),
@@ -132,12 +134,16 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                             + (visibleRow * TRADE_ROW_HEIGHT)
             );
 
+            var trade = trades.get(i).value();
+            boolean canAfford = canClientAfford(trade);
+
             renderBuyButton(
                     graphics,
                     BUY_BUTTON_X,
                     TRADE_START_Y + (visibleRow * TRADE_ROW_HEIGHT),
                     mouseX,
-                    mouseY
+                    mouseY,
+                    canAfford
             );
         }
     }
@@ -201,7 +207,8 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
             int x,
             int y,
             int mouseX,
-            int mouseY
+            int mouseY,
+            boolean canAfford
     ) {
         boolean hovered =
                 mouseX >= x
@@ -209,8 +216,17 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                         && mouseY >= y
                         && mouseY < y + BUY_BUTTON_HEIGHT;
 
-        int background =
-                hovered ? 0xFF606060 : 0xFF404040;
+        int background;
+
+        if (!canAfford) {
+            background = 0xFF222034;
+        }
+        else if (hovered) {
+            background = 0xFFd77bba;
+        }
+        else {
+            background = 0xFF306082;
+        }
 
         graphics.fill(
                 x,
@@ -219,6 +235,9 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 y + BUY_BUTTON_HEIGHT,
                 background
         );
+
+        int textColor =
+                canAfford ? 0xFFFFFF : 0x777777;
 
         String text = "BUY";
 
@@ -231,7 +250,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 text,
                 textX,
                 y + 4,
-                0xFFFFFF,
+                textColor,
                 false
         );
     }
@@ -385,12 +404,8 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         for (int i = scrollOffset; i < endIndex; i++) {
 
             int visibleRow = i - scrollOffset;
-
             int rowX = this.leftPos + 12;
-
-            int rowY = this.topPos
-                    + TRADE_START_Y
-                    + (visibleRow * TRADE_ROW_HEIGHT);
+            int rowY = this.topPos + TRADE_START_Y + (visibleRow * TRADE_ROW_HEIGHT);
 
             ItemStack hoveredStack =
                     getHoveredTradeStack(
@@ -487,5 +502,21 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 && mouseX < itemX + 16
                 && mouseY >= itemY
                 && mouseY < itemY + 16;
+    }
+
+    private boolean canClientAfford(
+            ShopTradeRecipe trade
+    ) {
+        assert minecraft != null;
+        if (minecraft.player == null) {
+            return false;
+        }
+
+        return ShopPaymentPlan
+                .create(
+                        minecraft.player.getInventory(),
+                        trade
+                )
+                .isPresent();
     }
 }

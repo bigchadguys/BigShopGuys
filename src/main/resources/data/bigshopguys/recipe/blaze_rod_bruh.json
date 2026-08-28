@@ -6,11 +6,11 @@
       "ingredient": {
         "item": "minecraft:emerald"
       },
-      "count": 2
+      "count": 5
     }
   ],
   "result": {
     "id": "minecraft:blaze_rod",
-    "count": 15
+    "count": 8
   }
 }

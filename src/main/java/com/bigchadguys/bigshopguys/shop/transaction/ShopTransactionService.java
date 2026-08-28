@@ -68,14 +68,14 @@ public final class ShopTransactionService {
             ShopTradeRecipe trade
     ) {
         return ShopPaymentPlan
-                .create(player, trade)
+                .create(player.getInventory(), trade)
                 .isPresent();
     }
 
     public static boolean consumePayment(ServerPlayer player, ShopTradeRecipe trade) {
         var paymentPlan =
                 ShopPaymentPlan.create(
-                        player,
+                        player.getInventory(),
                         trade
                 );
 
