@@ -1,0 +1,12 @@
+{
+  "title":{
+    "translate": "shop.bigshopguys.taro_shop"
+  },
+  "display": {
+    "icon": "minecraft:cat_spawn_egg"
+  },
+  "settings": {
+    "allow_bulk_purchase": false,
+    "show_player_inventory": true
+  }
+}

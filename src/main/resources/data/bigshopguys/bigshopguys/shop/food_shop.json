@@ -1,9 +1,9 @@
 {
   "title":{
-    "translate": "shop.bigshopguys.test_shop"
+    "translate": "shop.bigshopguys.food_shop"
   },
   "display": {
-    "icon": "minecraft:paper"
+    "icon": "minecraft:cooked_chicken"
   },
   "settings": {
     "allow_bulk_purchase": true,

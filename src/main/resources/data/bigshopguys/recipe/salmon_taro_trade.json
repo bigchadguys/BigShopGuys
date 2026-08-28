@@ -1,0 +1,16 @@
+{
+  "type": "bigshopguys:shop_trade",
+  "shop": "bigshopguys:taro_shop",
+  "costs": [
+    {
+      "ingredient": {
+        "item": "minecraft:stick"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "minecraft:salmon",
+    "count": 32
+  }
+}

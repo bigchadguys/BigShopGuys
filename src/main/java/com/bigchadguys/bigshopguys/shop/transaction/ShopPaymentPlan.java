@@ -8,32 +8,34 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 public record ShopPaymentPlan(
         List<PaymentEntry> entries
 ) {
 
-    /**
-     * Attempts to build a complete payment plan for the trade.
-     *
-     * If every cost can be satisfied, returns the plan.
-     * If even one cost cannot be satisfied, returns Optional.empty().
-     *
-     * This method does NOT modify the player's real inventory.
-     */
     public static Optional<ShopPaymentPlan> create(
             Inventory inventory,
             ShopTradeRecipe trade
     ) {
+        return create(
+                inventory,
+                trade,
+                1
+        );
+    }
+
+    public static Optional<ShopPaymentPlan> create(
+            Inventory inventory,
+            ShopTradeRecipe trade,
+            int purchaseCount
+    ) {
+        if (purchaseCount < 1) {
+            return Optional.empty();
+        }
+
         var items = inventory.items;
 
-        /*
-         * This represents how many items in each real
-         * inventory slot are still available to allocate.
-         *
-         * We modify this temporary array, NOT the player's
-         * actual ItemStacks.
-         */
         int[] remainingPerSlot =
                 new int[items.size()];
 
@@ -52,6 +54,13 @@ public record ShopPaymentPlan(
          * Process ShopCost one at a time.
          */
         for (var cost : trade.costs()) {
+
+            long required = (long) cost.count()
+                    * purchaseCount;
+
+            if(required > Integer.MAX_VALUE) {
+                return Optional.empty();
+            }
 
             int amountNeeded =
                     cost.count();
@@ -124,6 +133,41 @@ public record ShopPaymentPlan(
         );
     }
 
+    public static int maxAffordablePurchases(
+            Inventory inventory,
+            ShopTradeRecipe trade
+    ) {
+        if (trade.costs().isEmpty()) {
+            return 1;
+        }
+
+        int totalItems = 0;
+
+        for (ItemStack stack : inventory.items) {
+            totalItems += stack.getCount();
+        }
+
+        int smallestCost =
+                trade.costs().stream().mapToInt(cost -> cost.count()).min().orElse(1);
+
+        int high = totalItems / smallestCost;
+        int low = 0;
+
+        while(low < high) {
+            int middle = low + (high - low + 1) / 2;
+
+            boolean affordable =
+                    create(inventory, trade, middle).isPresent();
+
+            if (affordable) {
+                low = middle;
+            } else {
+                high = middle - 1;
+            }
+        }
+
+        return low;
+    }
 
     /**
      * Actually consumes the items represented by this plan.

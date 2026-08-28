@@ -189,10 +189,13 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                         return true;
                     }
 
+                    boolean bulkRequested = hasShiftDown();
+
                     PacketDistributor.sendToServer(
                             new BuyTradePayload(
                                     menu.getShopPos(),
-                                    holder.id()
+                                    holder.id(),
+                                    bulkRequested
                             )
                     );
 
@@ -357,28 +360,6 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         return true;
     }
 
-    @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(
-                graphics,
-                mouseX,
-                mouseY,
-                partialTick
-        );
-
-        renderTradeTooltips(
-                graphics,
-                mouseX,
-                mouseY
-        );
-
-        renderBuyButtonTooltips(
-                graphics,
-                mouseX,
-                mouseY
-        );
-    }
-
     private void renderBuyButtonTooltips(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
         var trades = getTrades();
 
@@ -533,5 +514,27 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                         trade
                 )
                 .isPresent();
+    }
+
+    @Override
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(
+                graphics,
+                mouseX,
+                mouseY,
+                partialTick
+        );
+
+        renderTradeTooltips(
+                graphics,
+                mouseX,
+                mouseY
+        );
+
+        renderBuyButtonTooltips(
+                graphics,
+                mouseX,
+                mouseY
+        );
     }
 }

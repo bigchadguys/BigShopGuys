@@ -1,10 +1,12 @@
 package com.bigchadguys.bigshopguys.network;
 
 import com.bigchadguys.bigshopguys.BigShopGuys;
+import com.bigchadguys.bigshopguys.shop.transaction.ShopPaymentPlan;
 import com.bigchadguys.bigshopguys.shop.transaction.ShopTransactionService;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -14,26 +16,21 @@ import org.jetbrains.annotations.NotNull;
 
 public record BuyTradePayload(
         BlockPos shopPos,
-        ResourceLocation recipeId
+        ResourceLocation recipeId,
+        boolean bulk
 ) implements CustomPacketPayload {
 
     public static final Type<BuyTradePayload> TYPE =
-            new Type<>(
-                    ResourceLocation.fromNamespaceAndPath(
-                            BigShopGuys.MOD_ID,
-                            "buy_trade"
-                    )
-            );
+            new Type<>(ResourceLocation.fromNamespaceAndPath(BigShopGuys.MOD_ID, "buy_trade"));
 
     public static final StreamCodec<ByteBuf, BuyTradePayload> STREAM_CODEC =
             StreamCodec.composite(
-
                     BlockPos.STREAM_CODEC,
                     BuyTradePayload::shopPos,
-
                     ResourceLocation.STREAM_CODEC,
                     BuyTradePayload::recipeId,
-
+                    ByteBufCodecs.BOOL,
+                    BuyTradePayload::bulk,
                     BuyTradePayload::new
             );
 
@@ -73,11 +70,19 @@ public record BuyTradePayload(
 
         var trade = validatedTrade.get();
 
+        boolean bulkRequested = payload.bulk();
+        boolean bulkAllowed = ShopTransactionService.allowsBulkPurchase(player);
+        boolean effectiveBulk = bulkRequested && bulkAllowed;
         boolean paymentConsumed =
                 ShopTransactionService.consumePayment(
                         player,
                         trade
                 );
+
+        int purchaseCount = 1;
+        if (effectiveBulk) {
+            purchaseCount = ShopPaymentPlan.maxAffordablePurchases(player.getInventory(), trade);
+        }
 
         if (!paymentConsumed) {
 
@@ -100,6 +105,8 @@ public record BuyTradePayload(
                 trade
         );
 
+
+
         player.containerMenu.broadcastChanges();
 
         BigShopGuys.LOGGER.info(
@@ -111,6 +118,16 @@ public record BuyTradePayload(
         player.displayClientMessage(
                 Component.literal("Purchase Complete"),
                 true
+        );
+
+        BigShopGuys.LOGGER.info(
+                "Trade {} requested by {} - requestedBulk={}, allowedBulk={}, effectiveBulk={}, maxAffordable={}",
+                payload.recipeId(),
+                player.getName().getString(),
+                bulkRequested,
+                bulkAllowed,
+                effectiveBulk,
+                purchaseCount
         );
     }
 

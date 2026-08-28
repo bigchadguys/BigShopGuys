@@ -1,6 +1,6 @@
 {
   "type": "bigshopguys:shop_trade",
-  "shop": "bigshopguys:test_shop",
+  "shop": "bigshopguys:food_shop",
   "costs": [
     {
       "ingredient": {

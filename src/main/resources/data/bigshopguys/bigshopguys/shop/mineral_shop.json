@@ -1,9 +1,9 @@
 {
   "title":{
-    "translate": "shop.bigshopguys.test_shop"
+    "translate": "shop.bigshopguys.mineral_shop"
   },
   "display": {
-    "icon": "minecraft:paper"
+    "icon": "minecraft:diamond"
   },
   "settings": {
     "allow_bulk_purchase": true,

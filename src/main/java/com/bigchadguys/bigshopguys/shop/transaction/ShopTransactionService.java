@@ -1,9 +1,11 @@
 package com.bigchadguys.bigshopguys.shop.transaction;
 
 import com.bigchadguys.bigshopguys.menu.ShopMenu;
+import com.bigchadguys.bigshopguys.shop.ShopRegistries;
 import com.bigchadguys.bigshopguys.shop.block.ShopBlockEntity;
 import com.bigchadguys.bigshopguys.shop.recipe.ShopTradeRecipe;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ServerPacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -63,10 +65,7 @@ public final class ShopTransactionService {
         return Optional.of(trade);
     }
 
-    public static boolean canAfford(
-            ServerPlayer player,
-            ShopTradeRecipe trade
-    ) {
+    public static boolean canAfford(ServerPlayer player, ShopTradeRecipe trade) {
         return ShopPaymentPlan
                 .create(player.getInventory(), trade)
                 .isPresent();
@@ -88,10 +87,7 @@ public final class ShopTransactionService {
         return true;
     }
 
-    public static void giveResult(
-            ServerPlayer player,
-            ShopTradeRecipe trade
-    ) {
+    public static void giveResult(ServerPlayer player, ShopTradeRecipe trade) {
         ItemStack resultStack =
                 trade.result().copy();
 
@@ -109,6 +105,28 @@ public final class ShopTransactionService {
         }
 
         player.getInventory().setChanged();
+    }
+
+    public static boolean allowsBulkPurchase(ServerPlayer player) {
+        if(!(player.containerMenu instanceof ShopMenu shopMenu)){
+            return false;
+        }
+
+        var shopRegistry =
+                player.serverLevel().registryAccess().registryOrThrow(ShopRegistries.SHOP_DEFINITION_REGISTRY_KEY);
+
+        var definition =
+                shopRegistry.get(
+                        shopMenu.getShopId()
+                );
+
+        if (definition == null) {
+            return false;
+        }
+
+        return definition
+                .settings()
+                .allowBulkPurchase();
     }
 
     private ShopTransactionService() {
