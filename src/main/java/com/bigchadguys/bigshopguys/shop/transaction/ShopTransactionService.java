@@ -72,10 +72,15 @@ public final class ShopTransactionService {
     }
 
     public static boolean consumePayment(ServerPlayer player, ShopTradeRecipe trade) {
+        return consumePayment(player, trade, 1);
+    }
+
+    public static boolean consumePayment(ServerPlayer player, ShopTradeRecipe trade, int purchaseCount) {
         var paymentPlan =
                 ShopPaymentPlan.create(
                         player.getInventory(),
-                        trade
+                        trade,
+                        purchaseCount
                 );
 
         if (paymentPlan.isEmpty()) {
@@ -105,6 +110,15 @@ public final class ShopTransactionService {
         }
 
         player.getInventory().setChanged();
+    }
+
+    public static void giveResult(ServerPlayer player, ShopTradeRecipe trade, int purchaseCount) {
+        for (int i = 0; i < purchaseCount; i++) {
+            giveResult(
+                    player,
+                    trade
+            );
+        }
     }
 
     public static boolean allowsBulkPurchase(ServerPlayer player) {

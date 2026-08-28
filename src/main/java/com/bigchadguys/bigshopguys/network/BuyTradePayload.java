@@ -14,10 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-public record BuyTradePayload(
-        BlockPos shopPos,
-        ResourceLocation recipeId,
-        boolean bulk
+public record BuyTradePayload(BlockPos shopPos, ResourceLocation recipeId, boolean bulk
 ) implements CustomPacketPayload {
 
     public static final Type<BuyTradePayload> TYPE =
@@ -73,23 +70,55 @@ public record BuyTradePayload(
         boolean bulkRequested = payload.bulk();
         boolean bulkAllowed = ShopTransactionService.allowsBulkPurchase(player);
         boolean effectiveBulk = bulkRequested && bulkAllowed;
-        boolean paymentConsumed =
-                ShopTransactionService.consumePayment(
-                        player,
-                        trade
-                );
 
         int purchaseCount = 1;
+
         if (effectiveBulk) {
             purchaseCount = ShopPaymentPlan.maxAffordablePurchases(player.getInventory(), trade);
         }
 
-        if (!paymentConsumed) {
+        BigShopGuys.LOGGER.info(
+                "Trade {} requested by {} - requestedBulk={}, allowedBulk={}, effectiveBulk={}, maxAffordable={}",
+                payload.recipeId(),
+                player.getName().getString(),
+                bulkRequested,
+                bulkAllowed,
+                effectiveBulk,
+                purchaseCount
+        );
+
+        if (purchaseCount < 1) {
 
             BigShopGuys.LOGGER.info(
                     "Player {} could not pay for trade {}",
                     player.getName().getString(),
                     payload.recipeId()
+            );
+
+            player.displayClientMessage(
+                    Component.literal(
+                            "You cannot afford this trade."
+                    ),
+                    true
+            );
+
+            return;
+        }
+
+        boolean paymentConsumed =
+                ShopTransactionService.consumePayment(
+                        player,
+                        trade,
+                        purchaseCount
+                );
+
+        if (!paymentConsumed) {
+
+            BigShopGuys.LOGGER.info(
+                    "Payment Plan failed for {} purchasing {} x{}",
+                    player.getName().getString(),
+                    payload.recipeId(),
+                    purchaseCount
             );
 
             player.displayClientMessage(
@@ -102,31 +131,16 @@ public record BuyTradePayload(
 
         ShopTransactionService.giveResult(
                 player,
-                trade
+                trade,
+                purchaseCount
         );
-
-
 
         player.containerMenu.broadcastChanges();
 
         BigShopGuys.LOGGER.info(
-                "Player {} completed trade {}",
+                "Player {} completed trade {} x{}",
                 player.getName().getString(),
-                payload.recipeId()
-        );
-
-        player.displayClientMessage(
-                Component.literal("Purchase Complete"),
-                true
-        );
-
-        BigShopGuys.LOGGER.info(
-                "Trade {} requested by {} - requestedBulk={}, allowedBulk={}, effectiveBulk={}, maxAffordable={}",
                 payload.recipeId(),
-                player.getName().getString(),
-                bulkRequested,
-                bulkAllowed,
-                effectiveBulk,
                 purchaseCount
         );
     }

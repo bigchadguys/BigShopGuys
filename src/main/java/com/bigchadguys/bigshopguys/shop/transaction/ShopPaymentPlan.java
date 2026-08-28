@@ -63,7 +63,7 @@ public record ShopPaymentPlan(
             }
 
             int amountNeeded =
-                    cost.count();
+                    (int) required;
 
             for (int slot = 0;
                  slot < items.size()
