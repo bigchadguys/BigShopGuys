@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,26 +18,12 @@ public class ShopMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
 
     // Client
-    public ShopMenu(
-            int containerId,
-            Inventory playerInventory,
-            RegistryFriendlyByteBuf buffer
-    ) {
-        this(
-                containerId,
-                playerInventory,
-                buffer.readBlockPos(),
-                buffer.readResourceLocation()
-        );
+    public ShopMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
+        this(containerId, playerInventory, buffer.readBlockPos(), buffer.readResourceLocation());
     }
 
     // Server
-    public ShopMenu(
-            int containerId,
-            Inventory playerInventory,
-            BlockPos shopPos,
-            ResourceLocation shopId
-    ) {
+    public ShopMenu(int containerId, Inventory playerInventory, BlockPos shopPos, ResourceLocation shopId) {
         super(ModMenus.SHOP.get(), containerId);
 
         this.shopPos = shopPos;
@@ -45,6 +32,38 @@ public class ShopMenu extends AbstractContainerMenu {
                 playerInventory.player.level(),
                 shopPos
         );
+
+        addPlayerInventory(playerInventory);
+    }
+
+    private void addPlayerInventory(Inventory playerInventory) {
+        int inventoryStartY = 176;
+
+        for(int row = 0; row < 3; ++row) {
+            for(int column = 0; column < 9; ++column) {
+                this.addSlot(
+                        new Slot(
+                                playerInventory,
+                                column + row * 9 + 9,
+                                8 + column * 18,
+                                inventoryStartY + row * 18
+                        )
+                );
+            }
+        }
+
+        int hotBayY = 234;
+
+        for(int column = 0; column < 9; ++column) {
+            this.addSlot(
+                    new Slot(
+                            playerInventory,
+                            column,
+                            8 + column * 18,
+                            hotBayY
+                    )
+            );
+        }
     }
 
     public ResourceLocation getShopId() {

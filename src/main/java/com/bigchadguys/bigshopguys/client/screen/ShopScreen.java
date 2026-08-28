@@ -27,24 +27,15 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
 
     private int scrollOffset = 0;
 
-    public ShopScreen(
-            ShopMenu menu,
-            Inventory playerInventory,
-            Component title
-    ) {
+    public ShopScreen(ShopMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
 
         this.imageWidth = 176;
-        this.imageHeight = 180;
+        this.imageHeight = 258;
     }
 
     @Override
-    protected void renderBg(
-            @NotNull GuiGraphics graphics,
-            float partialTick,
-            int mouseX,
-            int mouseY
-    ) {
+    protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         int x = this.leftPos;
         int y = this.topPos;
 
@@ -83,6 +74,11 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
             int mouseX,
             int mouseY
     ) {
+        int localMouseX =
+                mouseX - this.leftPos;
+        int localMouseY =
+                mouseY - this.topPos;
+
         // Shop title
         graphics.drawString(
                 this.font,
@@ -141,11 +137,20 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                     graphics,
                     BUY_BUTTON_X,
                     TRADE_START_Y + (visibleRow * TRADE_ROW_HEIGHT),
-                    mouseX,
-                    mouseY,
+                    localMouseX,
+                    localMouseY,
                     canAfford
             );
         }
+
+        graphics.drawString(
+                this.font,
+                this.playerInventoryTitle,
+                8,
+                164,
+                0xFFFFFF,
+                false
+        );
     }
 
     @Override
@@ -255,12 +260,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         );
     }
 
-    private void renderTradeRow(
-            GuiGraphics graphics,
-            ShopTradeRecipe trade,
-            int x,
-            int y
-    ) {
+    private void renderTradeRow(GuiGraphics graphics, ShopTradeRecipe trade, int x, int y) {
         int currentX = x;
 
         for (int i = 0; i < trade.costs().size(); i++) {
@@ -336,12 +336,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     }
 
     @Override
-    public boolean mouseScrolled(
-            double mouseX,
-            double mouseY,
-            double scrollX,
-            double scrollY
-    ) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         var trades = getTrades();
 
         int maxScrollOffset = Math.max(
@@ -369,12 +364,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     }
 
     @Override
-    public void render(
-            @NotNull GuiGraphics graphics,
-            int mouseX,
-            int mouseY,
-            float partialTick
-    ) {
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(
                 graphics,
                 mouseX,
@@ -389,11 +379,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         );
     }
 
-    private void renderTradeTooltips(
-            GuiGraphics graphics,
-            int mouseX,
-            int mouseY
-    ) {
+    private void renderTradeTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
         var trades = getTrades();
 
         int endIndex = Math.min(
@@ -430,13 +416,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         }
     }
 
-    private ItemStack getHoveredTradeStack(
-            ShopTradeRecipe trade,
-            int x,
-            int y,
-            double mouseX,
-            double mouseY
-    ) {
+    private ItemStack getHoveredTradeStack(ShopTradeRecipe trade, int x, int y, double mouseX, double mouseY) {
         int currentX = x;
 
         // Check every cost
@@ -492,21 +472,14 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         return ItemStack.EMPTY;
     }
 
-    private boolean isMouseOverItem(
-            double mouseX,
-            double mouseY,
-            int itemX,
-            int itemY
-    ) {
+    private boolean isMouseOverItem(double mouseX, double mouseY, int itemX, int itemY) {
         return mouseX >= itemX
                 && mouseX < itemX + 16
                 && mouseY >= itemY
                 && mouseY < itemY + 16;
     }
 
-    private boolean canClientAfford(
-            ShopTradeRecipe trade
-    ) {
+    private boolean canClientAfford(ShopTradeRecipe trade) {
         assert minecraft != null;
         if (minecraft.player == null) {
             return false;

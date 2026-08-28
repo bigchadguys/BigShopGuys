@@ -100,6 +100,8 @@ public record BuyTradePayload(
                 trade
         );
 
+        player.containerMenu.broadcastChanges();
+
         BigShopGuys.LOGGER.info(
                 "Player {} completed trade {}",
                 player.getName().getString(),
