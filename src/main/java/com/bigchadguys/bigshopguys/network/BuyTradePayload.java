@@ -4,6 +4,7 @@ import com.bigchadguys.bigshopguys.BigShopGuys;
 import com.bigchadguys.bigshopguys.shop.transaction.ShopTransactionService;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -86,13 +87,28 @@ public record BuyTradePayload(
                     payload.recipeId()
             );
 
+            player.displayClientMessage(
+                    Component.literal("You cannot afford this trade."),
+                    true
+            );
+
             return;
         }
 
+        ShopTransactionService.giveResult(
+                player,
+                trade
+        );
+
         BigShopGuys.LOGGER.info(
-                "Player {} successfully paid for trade {}",
+                "Player {} completed trade {}",
                 player.getName().getString(),
                 payload.recipeId()
+        );
+
+        player.displayClientMessage(
+                Component.literal("Purchase Complete"),
+                true
         );
     }
 
