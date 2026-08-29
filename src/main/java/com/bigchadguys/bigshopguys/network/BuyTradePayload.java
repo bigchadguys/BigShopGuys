@@ -143,6 +143,18 @@ public record BuyTradePayload(BlockPos shopPos, ResourceLocation recipeId, boole
                 payload.recipeId(),
                 purchaseCount
         );
+
+        Component purchaseMessage;
+        if (purchaseCount > 1) {
+            purchaseMessage = Component.literal("Purchase Complete x" + purchaseCount);
+        } else {
+            purchaseMessage = Component.literal("Purchase Complete");
+        }
+
+        player.displayClientMessage(
+                purchaseMessage,
+                true
+        );
     }
 
     @Override
