@@ -3,7 +3,8 @@
     "translate": "shop.bigshopguys.mineral_shop"
   },
   "display": {
-    "icon": "minecraft:diamond"
+    "icon": "minecraft:diamond",
+    "theme": "bigshopguys:v1/default"
   },
   "settings": {
     "allow_bulk_purchase": true,

@@ -3,7 +3,8 @@
     "translate": "shop.bigshopguys.food_shop"
   },
   "display": {
-    "icon": "minecraft:cooked_chicken"
+    "icon": "minecraft:cooked_chicken",
+    "theme": "bigshopguys:v1/default"
   },
   "settings": {
     "allow_bulk_purchase": true,

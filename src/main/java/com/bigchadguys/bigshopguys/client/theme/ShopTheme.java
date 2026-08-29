@@ -21,4 +21,8 @@ public record ShopTheme(ResourceLocation background) {
         );
     }
 
+    public static ShopTheme defaultTheme(){
+        return fromId(DEFAULT_ID);
+    }
+
 }

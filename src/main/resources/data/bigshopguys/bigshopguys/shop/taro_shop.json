@@ -3,7 +3,8 @@
     "translate": "shop.bigshopguys.taro_shop"
   },
   "display": {
-    "icon": "minecraft:cat_spawn_egg"
+    "icon": "minecraft:cat_spawn_egg",
+    "theme": "bigshopguys:v1/default"
   },
   "settings": {
     "allow_bulk_purchase": false,

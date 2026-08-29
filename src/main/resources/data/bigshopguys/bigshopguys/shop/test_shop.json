@@ -3,7 +3,8 @@
     "translate": "shop.bigshopguys.test_shop"
   },
   "display": {
-    "icon": "minecraft:paper"
+    "icon": "minecraft:paper",
+    "theme": "bigshopguys:v1/default"
   },
   "settings": {
     "allow_bulk_purchase": true,

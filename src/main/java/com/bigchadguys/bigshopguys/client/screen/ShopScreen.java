@@ -1,7 +1,9 @@
 package com.bigchadguys.bigshopguys.client.screen;
 
+import com.bigchadguys.bigshopguys.client.theme.ShopTheme;
 import com.bigchadguys.bigshopguys.menu.ShopMenu;
 import com.bigchadguys.bigshopguys.network.BuyTradePayload;
+import com.bigchadguys.bigshopguys.shop.ShopRegistries;
 import com.bigchadguys.bigshopguys.shop.recipe.ModShopRecipes;
 import com.bigchadguys.bigshopguys.shop.recipe.ShopTradeRecipe;
 import com.bigchadguys.bigshopguys.shop.transaction.ShopPaymentPlan;
@@ -38,13 +40,13 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     protected void renderBg(@NotNull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         int x = this.leftPos;
         int y = this.topPos;
-
-        graphics.fill(
-                x,
-                y,
-                x + this.imageWidth,
-                y + this.imageHeight,
-                0xFF202020
+        ShopTheme theme = getTheme();
+        graphics.blitSprite(
+                theme.background(),
+                this.leftPos,
+                this.topPos,
+                this.imageWidth,
+                this.imageHeight
         );
     }
 
@@ -514,6 +516,27 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                         trade
                 )
                 .isPresent();
+    }
+
+    private ShopTheme getTheme(){
+        if (minecraft == null || minecraft.level == null){
+            return ShopTheme.defaultTheme();
+        }
+
+        var shopRegistry =
+                minecraft.level.registryAccess().registryOrThrow(ShopRegistries.SHOP_DEFINITION_REGISTRY_KEY);
+
+        var definition =
+                shopRegistry.get(menu.getShopId());
+
+        if  (definition == null){
+            return ShopTheme.defaultTheme();
+        }
+
+        var themeId =
+                definition.display().theme().orElseThrow();
+
+        return ShopTheme.fromId(themeId);
     }
 
     @Override
