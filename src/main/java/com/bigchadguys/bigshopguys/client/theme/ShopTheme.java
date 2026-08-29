@@ -7,7 +7,9 @@ public record ShopTheme(
         ResourceLocation background,
         ResourceLocation buyButton,
         ResourceLocation buyButtonHovered,
-        ResourceLocation buyButtonDisabled
+        ResourceLocation buyButtonDisabled,
+        ResourceLocation scrollbarTrack,
+        ResourceLocation scrollbarThumb
 ) {
 
     public static final ResourceLocation DEFAULT_ID =
@@ -38,6 +40,16 @@ public record ShopTheme(
                 ResourceLocation.fromNamespaceAndPath(
                 themeId.getNamespace(),
                 basePath + "/buy_button_disabled"
+                ),
+
+                ResourceLocation.fromNamespaceAndPath(
+                themeId.getNamespace(),
+                basePath + "/scrollbar_track"
+                ),
+
+                ResourceLocation.fromNamespaceAndPath(
+                themeId.getNamespace(),
+                basePath + "/scrollbar_thumb"
                 )
         );
     }

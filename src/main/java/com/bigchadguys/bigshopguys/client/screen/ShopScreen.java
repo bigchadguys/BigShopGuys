@@ -21,13 +21,22 @@ import java.util.List;
 
 public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
 
+    private static final int TEXT_COLOR = 0x3F3F3F;
+
     private static final int VISIBLE_TRADE_ROWS = 4;
     private static final int TRADE_ROW_HEIGHT = 24;
     private static final int TRADE_START_Y = 62;
+
     private static final int BUY_BUTTON_X = 132;
     private static final int BUY_BUTTON_WIDTH = 32;
     private static final int BUY_BUTTON_HEIGHT = 16;
-    private static final int TEXT_COLOR = 0x3F3F3F;
+
+    private static final int SCROLLBAR_X = 166;
+    private static final int SCROLLBAR_Y = 62;
+    private static final int SCROLLBAR_WIDTH = 6;
+    private static final int SCROLLBAR_HEIGHT = 88;
+    private static final int SCROLLBAR_THUMB_HEIGHT = 16;
+
 
     private int scrollOffset = 0;
 
@@ -102,6 +111,12 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         // Get all trades belonging to this shop
         var trades = getTrades();
 
+        // Scroll Bar
+        renderScrollbar(
+                graphics,
+                trades
+        );
+
         // Trade count
         graphics.drawString(
                 this.font,
@@ -148,7 +163,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 this.playerInventoryTitle,
                 8,
                 164,
-                0xFFFFFF,
+                TEXT_COLOR,
                 false
         );
     }
@@ -362,6 +377,34 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         }
 
         return true;
+    }
+
+    private void renderScrollbar(GuiGraphics graphics, List<RecipeHolder<ShopTradeRecipe>> trades) {
+        ShopTheme theme = getTheme();
+
+        graphics.blitSprite(
+                theme.scrollbarTrack(),
+                SCROLLBAR_X,
+                SCROLLBAR_Y,
+                SCROLLBAR_WIDTH,
+                SCROLLBAR_HEIGHT
+        );
+
+        int maxScrollOffset = Math.max(0, trades.size() - VISIBLE_TRADE_ROWS);
+        int travel = SCROLLBAR_HEIGHT - SCROLLBAR_THUMB_HEIGHT;
+        int thumbY = SCROLLBAR_Y;
+
+        if (maxScrollOffset > 0) {
+            thumbY += (scrollOffset * travel) / maxScrollOffset;
+        }
+
+        graphics.blitSprite(
+                theme.scrollbarThumb(),
+                SCROLLBAR_X,
+                thumbY,
+                SCROLLBAR_WIDTH,
+                SCROLLBAR_THUMB_HEIGHT
+        );
     }
 
     private void renderBuyButtonTooltips(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
