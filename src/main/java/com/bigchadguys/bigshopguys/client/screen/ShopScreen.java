@@ -39,8 +39,8 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     private static final int SCROLLBAR_HEIGHT = 88;
     private static final int SCROLLBAR_THUMB_HEIGHT = 16;
 
-
     private int scrollOffset = 0;
+    private int hoveredBuyRow = -1;
 
     public ShopScreen(ShopMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -236,7 +236,6 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
 
     private void renderBuyButton(GuiGraphics graphics, int x, int y, int mouseX, int mouseY, boolean canAfford) {
         ShopTheme theme = getTheme();
-        private int hoveredBuyRow = -1;
         boolean hovered =
                 mouseX >= x
                         && mouseX < x + BUY_BUTTON_WIDTH
@@ -466,34 +465,38 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         var trades = getTrades();
-        int oldScrollOffset = scrollOffset;
+
+        int oldScrollOffset =
+                scrollOffset;
+
+        int maxScrollOffset =
+                Math.max(
+                        0,
+                        trades.size()
+                                - VISIBLE_TRADE_ROWS
+                );
+
+        if (scrollY < 0) {
+            scrollOffset =
+                    Math.min(
+                            scrollOffset + 1,
+                            maxScrollOffset
+                    );
+        }
+        else if (scrollY > 0) {
+            scrollOffset =
+                    Math.max(
+                            scrollOffset - 1,
+                            0
+                    );
+        }
 
         if (scrollOffset != oldScrollOffset) {
+
             playThemeSound(
                     getTheme().scrollSound(),
                     0.5F,
                     1.0F
-            );
-        }
-
-        int maxScrollOffset = Math.max(
-                0,
-                trades.size() - VISIBLE_TRADE_ROWS
-        );
-
-        // Mouse wheel down
-        if (scrollY < 0) {
-            scrollOffset = Math.min(
-                    scrollOffset + 1,
-                    maxScrollOffset
-            );
-        }
-
-        // Mouse wheel up
-        else if (scrollY > 0) {
-            scrollOffset = Math.max(
-                    scrollOffset - 1,
-                    0
             );
         }
 
