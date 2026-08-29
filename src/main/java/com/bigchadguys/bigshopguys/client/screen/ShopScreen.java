@@ -10,6 +10,7 @@ import com.bigchadguys.bigshopguys.shop.transaction.ShopPaymentPlan;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -26,6 +27,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     private static final int BUY_BUTTON_X = 132;
     private static final int BUY_BUTTON_WIDTH = 32;
     private static final int BUY_BUTTON_HEIGHT = 16;
+    private static final int TEXT_COLOR = 0x3F3F3F;
 
     private int scrollOffset = 0;
 
@@ -83,7 +85,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 this.title,
                 8,
                 8,
-                0xFFFFFF,
+                TEXT_COLOR,
                 false
         );
 
@@ -93,7 +95,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 "Shop ID: " + this.menu.getShopId(),
                 8,
                 28,
-                0xFFFFFF,
+                TEXT_COLOR,
                 false
         );
 
@@ -106,7 +108,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 "Trades available: " + trades.size(),
                 8,
                 46,
-                0xFFFFFF,
+                TEXT_COLOR,
                 false
         );
 
@@ -214,30 +216,30 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     }
 
     private void renderBuyButton(GuiGraphics graphics, int x, int y, int mouseX, int mouseY, boolean canAfford) {
+        ShopTheme theme = getTheme();
         boolean hovered =
                 mouseX >= x
                         && mouseX < x + BUY_BUTTON_WIDTH
                         && mouseY >= y
                         && mouseY < y + BUY_BUTTON_HEIGHT;
 
-        int background;
-
+        ResourceLocation buttonSprite;
         if (!canAfford) {
-            background = 0xFF222034;
+            buttonSprite = theme.buyButtonDisabled();
         }
         else if (hovered) {
-            background = 0xFFd77bba;
+            buttonSprite = theme.buyButtonHovered();
         }
         else {
-            background = 0xFF306082;
+            buttonSprite = theme.buyButton();
         }
 
-        graphics.fill(
+        graphics.blitSprite(
+                buttonSprite,
                 x,
                 y,
-                x + BUY_BUTTON_WIDTH,
-                y + BUY_BUTTON_HEIGHT,
-                background
+                BUY_BUTTON_WIDTH,
+                BUY_BUTTON_HEIGHT
         );
 
         int textColor =
