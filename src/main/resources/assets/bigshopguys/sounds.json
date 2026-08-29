@@ -1,0 +1,29 @@
+{
+  "shop_themes/v1/default/click": {
+    "sounds": [
+      {
+        "name": "bigshopguys:ui/default_click_01",
+        "volume": 0.4,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "shop_themes/v1/default/hover": {
+    "sounds": [
+      {
+        "name": "bigshopguys:ui/hover_01",
+        "volume": 0.8,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "shop_themes/v1/default/scroll": {
+    "sounds": [
+      {
+        "name": "bigshopguys:ui/hover_03",
+        "volume": 0.9,
+        "pitch": 1.0
+      }
+    ]
+  }
+}

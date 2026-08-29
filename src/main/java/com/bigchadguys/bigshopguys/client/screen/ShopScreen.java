@@ -9,8 +9,10 @@ import com.bigchadguys.bigshopguys.shop.recipe.ShopTradeRecipe;
 import com.bigchadguys.bigshopguys.shop.transaction.ShopPaymentPlan;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -208,6 +210,8 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                         return true;
                     }
 
+                    playThemeSound(getTheme().clickSound(), 0.8F, 1.0F);
+
                     boolean bulkRequested = hasShiftDown();
 
                     PacketDistributor.sendToServer(
@@ -232,6 +236,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
 
     private void renderBuyButton(GuiGraphics graphics, int x, int y, int mouseX, int mouseY, boolean canAfford) {
         ShopTheme theme = getTheme();
+        private int hoveredBuyRow = -1;
         boolean hovered =
                 mouseX >= x
                         && mouseX < x + BUY_BUTTON_WIDTH
@@ -274,6 +279,113 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 textColor,
                 false
         );
+    }
+
+    private void renderBuyButtonTooltips(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
+        var trades = getTrades();
+
+        int endIndex = Math.min(
+                scrollOffset + VISIBLE_TRADE_ROWS,
+                trades.size()
+        );
+
+        for (int i = scrollOffset; i < endIndex; i++) {
+            int visibleRow = i - scrollOffset;
+            var trade = trades.get(i).value();
+
+            if(canClientAfford(trade)) {
+                continue;
+            }
+
+            int buttonX = this.leftPos + BUY_BUTTON_X;
+
+            int buttonY =
+                    this.topPos
+                            + TRADE_START_Y
+                            + (visibleRow * TRADE_ROW_HEIGHT);
+
+            boolean hovered =
+                    mouseX >= buttonX
+                            && mouseX < buttonX + BUY_BUTTON_WIDTH
+                            && mouseY >= buttonY
+                            && mouseY < buttonY + BUY_BUTTON_HEIGHT;
+
+            if (hovered) {
+                graphics.renderTooltip(
+                        this.font,
+                        Component.literal("You cannot afford this trade"),
+                        mouseX,
+                        mouseY
+                );
+
+                return;
+            }
+        }
+    }
+
+    private void updateBuyButtonHoverSound(int mouseX, int mouseY) {
+        var trades =
+                getTrades();
+
+        int hoveredRow =
+                -1;
+
+        int endIndex =
+                Math.min(
+                        scrollOffset
+                                + VISIBLE_TRADE_ROWS,
+                        trades.size()
+                );
+
+        for (int i = scrollOffset;
+             i < endIndex;
+             i++) {
+
+            int visibleRow =
+                    i - scrollOffset;
+
+            int buttonX =
+                    this.leftPos
+                            + BUY_BUTTON_X;
+
+            int buttonY =
+                    this.topPos
+                            + TRADE_START_Y
+                            + visibleRow
+                            * TRADE_ROW_HEIGHT;
+
+            boolean hovered =
+                    mouseX >= buttonX
+                            && mouseX
+                            < buttonX
+                            + BUY_BUTTON_WIDTH
+                            && mouseY >= buttonY
+                            && mouseY
+                            < buttonY
+                            + BUY_BUTTON_HEIGHT;
+
+            if (hovered) {
+                hoveredRow =
+                        visibleRow;
+                break;
+            }
+        }
+
+        /*
+         * Entered a different BUY button.
+         */
+        if (hoveredRow != -1
+                && hoveredRow != hoveredBuyRow) {
+
+            playThemeSound(
+                    getTheme().hoverSound(),
+                    0.35F,
+                    1.0F
+            );
+        }
+
+        hoveredBuyRow =
+                hoveredRow;
     }
 
     private void renderTradeRow(GuiGraphics graphics, ShopTradeRecipe trade, int x, int y) {
@@ -354,6 +466,15 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         var trades = getTrades();
+        int oldScrollOffset = scrollOffset;
+
+        if (scrollOffset != oldScrollOffset) {
+            playThemeSound(
+                    getTheme().scrollSound(),
+                    0.5F,
+                    1.0F
+            );
+        }
 
         int maxScrollOffset = Math.max(
                 0,
@@ -405,48 +526,6 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 SCROLLBAR_WIDTH,
                 SCROLLBAR_THUMB_HEIGHT
         );
-    }
-
-    private void renderBuyButtonTooltips(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
-        var trades = getTrades();
-
-        int endIndex = Math.min(
-                scrollOffset + VISIBLE_TRADE_ROWS,
-                trades.size()
-        );
-
-        for (int i = scrollOffset; i < endIndex; i++) {
-            int visibleRow = i - scrollOffset;
-            var trade = trades.get(i).value();
-
-            if(canClientAfford(trade)) {
-                continue;
-            }
-
-            int buttonX = this.leftPos + BUY_BUTTON_X;
-
-            int buttonY =
-                    this.topPos
-                    + TRADE_START_Y
-                    + (visibleRow * TRADE_ROW_HEIGHT);
-
-            boolean hovered =
-                    mouseX >= buttonX
-                    && mouseX < buttonX + BUY_BUTTON_WIDTH
-                    && mouseY >= buttonY
-                    && mouseY < buttonY + BUY_BUTTON_HEIGHT;
-
-            if (hovered) {
-                graphics.renderTooltip(
-                        this.font,
-                        Component.literal("You cannot afford this trade"),
-                        mouseX,
-                        mouseY
-                );
-
-                return;
-            }
-        }
     }
 
     private void renderTradeTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
@@ -563,6 +642,25 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 .isPresent();
     }
 
+    private void playThemeSound(ResourceLocation soundId, float volume, float pitch) {
+        if (minecraft == null) {
+            return;
+        }
+
+        SoundEvent soundEvent =
+                SoundEvent.createVariableRangeEvent(
+                        soundId
+                );
+
+        minecraft.getSoundManager().play(
+                SimpleSoundInstance.forUI(
+                        soundEvent,
+                        pitch,
+                        volume
+                )
+        );
+    }
+
     private ShopTheme getTheme(){
         if (minecraft == null || minecraft.level == null){
             return ShopTheme.defaultTheme();
@@ -591,6 +689,11 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 mouseX,
                 mouseY,
                 partialTick
+        );
+
+        updateBuyButtonHoverSound(
+                mouseX,
+                mouseY
         );
 
         renderTradeTooltips(

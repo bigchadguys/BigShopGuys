@@ -9,7 +9,10 @@ public record ShopTheme(
         ResourceLocation buyButtonHovered,
         ResourceLocation buyButtonDisabled,
         ResourceLocation scrollbarTrack,
-        ResourceLocation scrollbarThumb
+        ResourceLocation scrollbarThumb,
+        ResourceLocation clickSound,
+        ResourceLocation hoverSound,
+        ResourceLocation scrollSound
 ) {
 
     public static final ResourceLocation DEFAULT_ID =
@@ -22,35 +25,15 @@ public record ShopTheme(
         String basePath = "shop_themes/" + themeId.getPath();
 
         return new ShopTheme(
-                ResourceLocation.fromNamespaceAndPath(
-                themeId.getNamespace(),
-                basePath + "/background"
-                ),
-
-                ResourceLocation.fromNamespaceAndPath(
-                themeId.getNamespace(),
-                basePath + "/buy_button"
-                ),
-
-                ResourceLocation.fromNamespaceAndPath(
-                themeId.getNamespace(),
-                basePath + "/buy_button_hovered"
-                ),
-
-                ResourceLocation.fromNamespaceAndPath(
-                themeId.getNamespace(),
-                basePath + "/buy_button_disabled"
-                ),
-
-                ResourceLocation.fromNamespaceAndPath(
-                themeId.getNamespace(),
-                basePath + "/scrollbar_track"
-                ),
-
-                ResourceLocation.fromNamespaceAndPath(
-                themeId.getNamespace(),
-                basePath + "/scrollbar_thumb"
-                )
+                ResourceLocation.fromNamespaceAndPath(themeId.getNamespace(), basePath + "/background"),
+                ResourceLocation.fromNamespaceAndPath(themeId.getNamespace(), basePath + "/buy_button"),
+                ResourceLocation.fromNamespaceAndPath(themeId.getNamespace(), basePath + "/buy_button_hovered"),
+                ResourceLocation.fromNamespaceAndPath(themeId.getNamespace(), basePath + "/buy_button_disabled"),
+                ResourceLocation.fromNamespaceAndPath(themeId.getNamespace(), basePath + "/scrollbar_track"),
+                ResourceLocation.fromNamespaceAndPath(themeId.getNamespace(), basePath + "/scrollbar_thumb"),
+                ResourceLocation.fromNamespaceAndPath(themeId.getNamespace(), basePath + "/click"),
+                ResourceLocation.fromNamespaceAndPath(themeId.getNamespace(), basePath + "/hover"),
+                ResourceLocation.fromNamespaceAndPath(themeId.getNamespace(), basePath + "/scroll")
         );
     }
 
