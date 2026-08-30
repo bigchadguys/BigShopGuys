@@ -8,6 +8,7 @@ import com.bigchadguys.bigshopguys.shop.ShopRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -93,17 +94,29 @@ public class ShopBlockEntity extends BlockEntity implements MenuProvider {
         } else {
             shopId = null;
         }
+
+        if (level != null && level.isClientSide) {
+            requestModelDataUpdate();
+        }
     }
 
     @Override
     protected void collectImplicitComponents(DataComponentMap.@NotNull Builder builder) {
         super.collectImplicitComponents(builder);
 
-        if (shopId != null) {
-            builder.set(
-                    ModDataComponents.SHOP_ID.get(),
-                    shopId
-            );
+        if (shopId == null){
+            return;
+        }
+
+        builder.set(ModDataComponents.SHOP_ID, shopId);
+
+        if (level != null) {
+            var registry = level.registryAccess().registryOrThrow(ShopRegistries.SHOP_DEFINITION_REGISTRY_KEY);
+            ShopDefinition definition = registry.get(shopId);
+
+            if (definition != null) {
+                builder.set(DataComponents.CUSTOM_NAME, definition.title());
+            }
         }
     }
 
