@@ -4,7 +4,8 @@
     {
       "function": "minecraft:copy_components",
       "include": [
-        "bigshopguys:shop_id"
+        "bigshopguys:shop_id",
+        "minecraft:custom_name"
       ],
       "source": "block_entity"
     }
