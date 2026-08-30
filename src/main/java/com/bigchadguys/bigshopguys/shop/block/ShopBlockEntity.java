@@ -17,6 +17,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,15 +36,31 @@ public class ShopBlockEntity extends BlockEntity implements MenuProvider {
         return Optional.ofNullable(shopId);
     }
 
+    public static final ModelProperty<ResourceLocation> SHOP_ID_PROPERTY = new ModelProperty<>();
+
     public void setShopId(ResourceLocation shopId) {
         this.shopId = shopId;
+
         setChanged();
+        requestModelDataUpdate();
+    }
+
+    @Override
+    public @NotNull ModelData getModelData() {
+        if (shopId == null) {
+            return ModelData.EMPTY;
+        }
+
+        return ModelData.builder().with(
+                SHOP_ID_PROPERTY,shopId
+        )
+                .build();
     }
 
     @Override
     protected void saveAdditional(
             @NotNull CompoundTag tag,
-            HolderLookup.Provider registries
+            HolderLookup.@NotNull Provider registries
     ) {
         super.saveAdditional(tag, registries);
 

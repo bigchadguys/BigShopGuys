@@ -1,5 +1,7 @@
 plugins {
     id 'java-library'
+    id 'eclipse'
+    id 'idea'
     id 'maven-publish'
     id 'net.neoforged.moddev' version '1.0.21'
 }
@@ -14,6 +16,8 @@ group = mod_group_id
 repositories {
     mavenCentral()
     maven { url = "https://maven.neoforged.net/releases" }
+    maven { url = "https://api.modrinth.com/maven" }
+    maven { url = "https://maven.terraformersmc.com/" }
 
     /*
     // FTB official maven (replaces maven.saps.dev)
@@ -131,6 +135,10 @@ configurations {
 }
 
 dependencies {
+    // -------- Jade --------
+    compileOnly "maven.modrinth:jade:${jade_version}"
+    localRuntime "maven.modrinth:jade:${jade_version}"
+
     // compileOnly "dev.ftb.mods:ftb-chunks-neoforge:2101.1.9"
     // runtimeOnly "dev.ftb.mods:ftb-chunks-neoforge:2101.1.9"
 
