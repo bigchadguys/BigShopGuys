@@ -1,6 +1,13 @@
 {
-  "shop.bigshopguys.test_shop": "Thee Shop of Wonders",
+  "comment.bigshopguys": "Diagnostics",
   "shop.bigshopguys.missing_shop_id": "This Shop has no Shop ID",
   "shop.bigshopguys.successful_trade_entry": "BigShopGuys Trade Successful",
-  "shop.bigshopguys.missing_shop_definition": "Missing Shop Definition"
+  "shop.bigshopguys.missing_shop_definition": "Missing Shop Definition",
+
+  "itemGroup.bigshopguys.shops": "Big Shop Guys",
+
+  "shop.bigshopguys.food_shop": "Le Food Shop",
+  "shop.bigshopguys.mineral_shop": "Ore's Galore",
+  "shop.bigshopguys.taro_shop": "Cat Co",
+  "shop.bigshopguys.test_shop": "Thee Shop of Wonders"
 }

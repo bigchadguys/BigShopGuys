@@ -4,6 +4,7 @@ import com.bigchadguys.bigshopguys.block.ModBlockEntities;
 import com.bigchadguys.bigshopguys.block.ModBlocks;
 import com.bigchadguys.bigshopguys.component.ModDataComponents;
 import com.bigchadguys.bigshopguys.datagen.DataGenerators;
+import com.bigchadguys.bigshopguys.item.ModCreativeTabs;
 import com.bigchadguys.bigshopguys.item.ModItems;
 import com.bigchadguys.bigshopguys.menu.ModMenus;
 import com.bigchadguys.bigshopguys.network.ModNetworking;
@@ -34,6 +35,7 @@ public class BigShopGuys {
         ModShopRecipes.RECIPE_SERIALIZERS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
+        ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
