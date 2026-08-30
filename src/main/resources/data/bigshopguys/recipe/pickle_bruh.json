@@ -1,0 +1,16 @@
+{
+  "type": "bigshopguys:shop_trade",
+  "shop": "bigshopguys:colton_shop",
+  "costs": [
+    {
+      "ingredient": {
+        "item": "minecraft:diamond"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "minecraft:sea_pickle",
+    "count": 12
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "title":{
+    "translate": "shop.bigshopguys.colton_shop"
+  },
+  "display": {
+    "icon": "minecraft:sea_pickle",
+    "theme": "bigshopguys:v1/default"
+  },
+  "settings": {
+    "allow_bulk_purchase": true,
+    "show_player_inventory": true
+  }
+}
