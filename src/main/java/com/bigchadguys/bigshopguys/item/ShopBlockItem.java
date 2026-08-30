@@ -31,8 +31,12 @@ public class ShopBlockItem extends BlockItem {
             return;
         }
 
-        tooltip.add(Component.translatable("shop.bigshopguys.tooltip.shopidprefix" + shopId).withStyle(ChatFormatting.GRAY));
-    };
-
-
+        tooltip.add(
+                Component.translatable(
+                        "shop.bigshopguys.tooltip.shopid", shopId.toString()
+                ).withStyle(
+                        ChatFormatting.GRAY
+                )
+        );
+    }
 }

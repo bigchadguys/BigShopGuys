@@ -5,7 +5,7 @@
   "shop.bigshopguys.missing_shop_definition": "Missing Shop Definition",
 
   "itemGroup.bigshopguys.shops": "Big Shop Guys",
-  "shop.bigshopguys.tooltip.shopidprefix": "Shop ID: ",
+  "shop.bigshopguys.tooltip.shopid": "Shop ID: %s",
 
   "shop.bigshopguys.food_shop": "Le Food Shop",
   "shop.bigshopguys.mineral_shop": "Ore's Galore",

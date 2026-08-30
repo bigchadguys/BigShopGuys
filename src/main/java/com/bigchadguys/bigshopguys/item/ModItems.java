@@ -17,9 +17,8 @@ public final class ModItems {
 
     public static final DeferredItem<ShopBlockItem> SHOP =
             ITEMS.register("shop", () -> new ShopBlockItem(
-                    ModBlocks.SHOP.get(),
-                    new Item.Properties()
-                            .useBlockDescriptionPrefix
+                        ModBlocks.SHOP.get(),
+                        new Item.Properties()
                     )
             );
 
