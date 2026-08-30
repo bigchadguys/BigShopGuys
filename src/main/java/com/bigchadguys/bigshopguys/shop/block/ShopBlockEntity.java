@@ -10,6 +10,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -42,7 +45,20 @@ public class ShopBlockEntity extends BlockEntity implements MenuProvider {
         this.shopId = shopId;
 
         setChanged();
-        requestModelDataUpdate();
+
+        if (level != null) {
+
+            if(level.isClientSide){
+                requestModelDataUpdate();
+            } else {
+                level.sendBlockUpdated(
+                        worldPosition,
+                        getBlockState(),
+                        getBlockState(),
+                        ShopBlock.UPDATE_CLIENTS
+                );
+            }
+        }
     }
 
     @Override
@@ -58,10 +74,7 @@ public class ShopBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    protected void saveAdditional(
-            @NotNull CompoundTag tag,
-            HolderLookup.@NotNull Provider registries
-    ) {
+    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.saveAdditional(tag, registries);
 
         if(shopId != null) {
@@ -70,10 +83,7 @@ public class ShopBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    protected void loadAdditional(
-            @NotNull CompoundTag tag,
-            HolderLookup.@NotNull Provider registries
-    ) {
+    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.loadAdditional(tag, registries);
 
         if (tag.contains("shop_id")) {
@@ -98,9 +108,7 @@ public class ShopBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    protected void applyImplicitComponents(
-            @NotNull DataComponentInput input
-    ) {
+    protected void applyImplicitComponents(@NotNull DataComponentInput input) {
         super.applyImplicitComponents(input);
 
         shopId = input.get(
@@ -129,13 +137,20 @@ public class ShopBlockEntity extends BlockEntity implements MenuProvider {
         );
     }
 
+    @Override
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag, registries);
+        return tag;
+    }
 
     @Override
-    public @Nullable AbstractContainerMenu createMenu(
-            int containerId,
-            Inventory inventory,
-            Player player
-        ) {
+    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int containerId, @NotNull Inventory inventory, @NotNull Player player) {
             if (shopId == null) {
                 return null;
             }
