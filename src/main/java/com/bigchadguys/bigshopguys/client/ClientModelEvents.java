@@ -20,9 +20,9 @@ import java.util.Map;
 public final class ClientModelEvents {
 
 private static final String SHOP_MODEL_RESOURCE_PREFIX =
-        "models/block/shop";
+        "models/block/shop/";
 private static final String SHOP_MODEL_PATH_PREFIX =
-        "block/shop";
+        "block/shop/";
 
 private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOCATIONS =
         new HashMap<>();
