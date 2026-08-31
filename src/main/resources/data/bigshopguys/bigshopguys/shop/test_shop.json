@@ -8,6 +8,7 @@
   },
   "settings": {
     "allow_bulk_purchase": true,
-    "show_player_inventory": true
+    "show_player_inventory": true,
+    "daily_shop": true
   }
 }
