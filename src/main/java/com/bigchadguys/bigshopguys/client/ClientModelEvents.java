@@ -3,6 +3,7 @@ package com.bigchadguys.bigshopguys.client;
 import com.bigchadguys.bigshopguys.BigShopGuys;
 import com.bigchadguys.bigshopguys.block.ModBlocks;
 import com.bigchadguys.bigshopguys.client.model.ShopBakeModel;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -12,59 +13,136 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ModelEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @EventBusSubscriber(modid = BigShopGuys.MOD_ID, value = Dist.CLIENT)
 public final class ClientModelEvents {
 
-    private static final ModelResourceLocation TEST_SHOP_MODEL =
-            ModelResourceLocation.standalone(
-                    ResourceLocation.fromNamespaceAndPath(
-                            BigShopGuys.MOD_ID,
-                            "block/shop/test_shop"
-                    )
-            );
-    private static final ModelResourceLocation TARO_SHOP_MODEL =
-            ModelResourceLocation.standalone(
-                    ResourceLocation.fromNamespaceAndPath(
-                            BigShopGuys.MOD_ID,
-                            "block/shop/taro_shop"
-                    )
-            );
+private static final String SHOP_MODEL_RESOURCE_PREFIX =
+        "models/block/shop";
+private static final String SHOP_MODEL_PATH_PREFIX =
+        "block/shop";
+
+private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOCATIONS =
+        new HashMap<>();
 
     @SubscribeEvent
-    public static void registerAdditionalModels(ModelEvent.RegisterAdditional event
-    ) {
-        event.register(TEST_SHOP_MODEL);
-        event.register(TARO_SHOP_MODEL);
+    public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
+        SHOP_MODEL_LOCATIONS.clear();
+
+        Minecraft.getInstance()
+                .getResourceManager()
+                .listResources(
+                        "models/block/shop",
+                        location ->
+                                location.getPath()
+                                        .startsWith(
+                                                SHOP_MODEL_RESOURCE_PREFIX
+                                        )
+                                        &&
+                                        location.getPath()
+                                                .endsWith(".json")
+                )
+                .keySet()
+                .forEach(resourceLocation -> {
+
+                    String resourcePath =
+                            resourceLocation.getPath();
+
+                    String shopPath =
+                            resourcePath.substring(
+                                    SHOP_MODEL_RESOURCE_PREFIX.length(),
+                                    resourcePath.length()
+                                            - ".json".length()
+                            );
+
+                    ResourceLocation shopId =
+                            ResourceLocation.fromNamespaceAndPath(
+                                    resourceLocation.getNamespace(),
+                                    shopPath
+                            );
+
+                    ResourceLocation modelId =
+                            ResourceLocation.fromNamespaceAndPath(
+                                    resourceLocation.getNamespace(),
+                                    SHOP_MODEL_PATH_PREFIX
+                                            + shopPath
+                            );
+
+                    ModelResourceLocation modelLocation =
+                            ModelResourceLocation.standalone(
+                                    modelId
+                            );
+
+                    SHOP_MODEL_LOCATIONS.put(
+                            shopId,
+                            modelLocation
+                    );
+
+                    event.register(
+                            modelLocation
+                    );
+
+                    BigShopGuys.LOGGER.debug(
+                            "Registered shop model {} for {}",
+                            modelId,
+                            shopId
+                    );
+                });
     }
 
     @SubscribeEvent
     public static void modifyBakingResult(ModelEvent.ModifyBakingResult event) {
-        BakedModel testShopModel =
-                event.getModels().get(
-                        TEST_SHOP_MODEL
-                );
-        BakedModel taroShopModel =
-                event.getModels().get(
-                        TARO_SHOP_MODEL
-                );
+        Map<ResourceLocation, BakedModel>
+                bakedShopModels =
+                new HashMap<>();
 
-        if (testShopModel == null || taroShopModel == null) {
-            BigShopGuys.LOGGER.warn("Models are not loaded!");
-            return;
-        }
+        SHOP_MODEL_LOCATIONS.forEach(
+                (shopId, modelLocation) -> {
 
-        var shopModelLocation = BlockModelShaper.stateToModelLocation(
-                ModBlocks.SHOP.get().defaultBlockState()
+                    BakedModel model =
+                            event.getModels()
+                                    .get(modelLocation);
+
+                    if (model == null) {
+                        BigShopGuys.LOGGER.warn(
+                                "Could not load model {} for shop {}",
+                                modelLocation,
+                                shopId
+                        );
+
+                        return;
+                    }
+
+                    bakedShopModels.put(
+                            shopId,
+                            model
+                    );
+                }
         );
 
-        event.getModels().computeIfPresent(
-                shopModelLocation,
-                (location, originalModel) ->
-                        new ShopBakeModel(
-                                originalModel,
-                                testShopModel,
-                                taroShopModel
-                        )
+        var shopModelLocation =
+                BlockModelShaper.stateToModelLocation(
+                        ModBlocks.SHOP.get()
+                                .defaultBlockState()
+                );
+
+        event.getModels()
+                .computeIfPresent(
+                        shopModelLocation,
+                        (location, originalModel) ->
+                                new ShopBakeModel(
+                                        originalModel,
+                                        Map.copyOf(
+                                                bakedShopModels
+                                        )
+                                )
+                );
+
+        BigShopGuys.LOGGER.info(
+                "Loaded {} shop block models",
+                bakedShopModels.size()
         );
     }
     private ClientModelEvents() {

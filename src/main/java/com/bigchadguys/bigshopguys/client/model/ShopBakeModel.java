@@ -14,47 +14,25 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 public class ShopBakeModel extends BakedModelWrapper<BakedModel> {
+    private final Map<ResourceLocation, BakedModel> shopModels;
 
-    private static final ResourceLocation TEST_SHOP_ID =
-            ResourceLocation.fromNamespaceAndPath(
-                    "bigshopguys",
-                    "test_shop"
-            );
-
-    private static final ResourceLocation TARO_SHOP_ID =
-            ResourceLocation.fromNamespaceAndPath(
-                    "bigshopguys",
-                    "taro_shop"
-            );
-
-    private final BakedModel testShopModel;
-    private final BakedModel taroShopModel;
-
-    public ShopBakeModel(
-            BakedModel originalModel,
-            BakedModel testShopModel,
-            BakedModel taroShopModel
-    ) {
+    public ShopBakeModel(BakedModel originalModel, Map<ResourceLocation, BakedModel> shopModels) {
         super(originalModel);
 
-        this.testShopModel = testShopModel;
-        this.taroShopModel = taroShopModel;
+        this.shopModels = shopModels;
     }
 
     private BakedModel selectModel(ModelData data) {
         ResourceLocation shopId = data.get(ShopBlockEntity.SHOP_ID_PROPERTY);
 
-        if (TEST_SHOP_ID.equals(shopId)) {
-            return testShopModel;
+        if (shopId == null) {
+            return originalModel;
         }
 
-        if (TARO_SHOP_ID.equals(shopId)) {
-            return taroShopModel;
-        }
-
-        return originalModel;
+        return shopModels.getOrDefault(shopId, originalModel);
     }
 
     @Override
