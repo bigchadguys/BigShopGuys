@@ -41,6 +41,7 @@ public class ShopBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public static final ModelProperty<ResourceLocation> SHOP_ID_PROPERTY = new ModelProperty<>();
+    public static final ModelProperty<ResourceLocation> SHOP_MODEL_PROPERTY = new ModelProperty<>();
 
     public void setShopId(ResourceLocation shopId) {
         this.shopId = shopId;
@@ -68,10 +69,29 @@ public class ShopBlockEntity extends BlockEntity implements MenuProvider {
             return ModelData.EMPTY;
         }
 
-        return ModelData.builder().with(
-                SHOP_ID_PROPERTY,shopId
-        )
-                .build();
+        ModelData.Builder builder = ModelData.builder().with(
+                SHOP_ID_PROPERTY, shopId
+        );
+
+        if (level != null) {
+            var registry =
+                    level.registryAccess().registryOrThrow(
+                            ShopRegistries.SHOP_DEFINITION_REGISTRY_KEY);
+
+            ShopDefinition definition = registry.get(shopId);
+
+            if (definition != null) {
+                definition.display().model().ifPresent(
+                        modelId ->
+                                builder.with(
+                                        SHOP_MODEL_PROPERTY,
+                                        modelId
+                                )
+                        );
+            }
+        }
+
+        return builder.build();
     }
 
     @Override

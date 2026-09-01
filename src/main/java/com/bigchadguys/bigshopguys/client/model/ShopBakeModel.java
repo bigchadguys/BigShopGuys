@@ -18,17 +18,33 @@ import java.util.Map;
 
 public class ShopBakeModel extends BakedModelWrapper<BakedModel> {
     private final Map<ResourceLocation, BakedModel> shopModels;
+    private final Map<ResourceLocation, BakedModel> modelsById;
 
-    public ShopBakeModel(BakedModel originalModel, Map<ResourceLocation, BakedModel> shopModels) {
+    public ShopBakeModel(
+            BakedModel originalModel,
+            Map<ResourceLocation, BakedModel> shopModels,
+            Map<ResourceLocation, BakedModel> modelsById
+            ) {
         super(originalModel);
 
         this.shopModels = shopModels;
+        this.modelsById = modelsById;
     }
 
     private BakedModel selectModel(ModelData data) {
+        ResourceLocation modelId = data.get(ShopBlockEntity.SHOP_MODEL_PROPERTY);
+
+        if (modelId != null) {
+            BakedModel explicit = modelsById.get(modelId);
+
+            if (explicit != null) {
+                return explicit;
+            }
+        }
+
         ResourceLocation shopId = data.get(ShopBlockEntity.SHOP_ID_PROPERTY);
 
-        if (shopId == null) {
+        if (shopId == null){
             return originalModel;
         }
 

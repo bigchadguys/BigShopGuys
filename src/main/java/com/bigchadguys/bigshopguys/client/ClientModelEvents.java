@@ -33,9 +33,7 @@ private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOC
 
         Minecraft.getInstance()
                 .getResourceManager()
-                .listResources(
-                        "models/block/shop",
-                        location ->
+                .listResources("models/block/shop", location ->
                                 location.getPath()
                                         .startsWith(
                                                 SHOP_MODEL_RESOURCE_PREFIX
@@ -133,10 +131,7 @@ private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOC
                         shopModelLocation,
                         (location, originalModel) ->
                                 new ShopBakeModel(
-                                        originalModel,
-                                        Map.copyOf(
-                                                bakedShopModels
-                                        )
+                                        originalModel, Map.copyOf(bakedShopModels), Map.copyOf(bakedShopModels)
                                 )
                 );
 

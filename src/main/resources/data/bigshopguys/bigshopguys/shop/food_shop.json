@@ -4,6 +4,7 @@
   },
   "display": {
     "icon": "minecraft:cooked_chicken",
+    "model": "bigshopguys:block/shop/food_shop_alt",
     "theme": "bigshopguys:v1/default"
   },
   "settings": {
