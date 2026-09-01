@@ -24,12 +24,13 @@ private static final String SHOP_MODEL_RESOURCE_PREFIX =
 private static final String SHOP_MODEL_PATH_PREFIX =
         "block/shop/";
 
-private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOCATIONS =
-        new HashMap<>();
+private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOCATIONS = new HashMap<>();
+private static final Map<ResourceLocation, ModelResourceLocation> MODEL_LOCATIONS_BY_ID = new HashMap<>();
 
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
         SHOP_MODEL_LOCATIONS.clear();
+        MODEL_LOCATIONS_BY_ID.clear();
 
         Minecraft.getInstance()
                 .getResourceManager()
@@ -73,14 +74,10 @@ private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOC
                                     modelId
                             );
 
-                    SHOP_MODEL_LOCATIONS.put(
-                            shopId,
-                            modelLocation
-                    );
+                    SHOP_MODEL_LOCATIONS.put(shopId, modelLocation);
+                    MODEL_LOCATIONS_BY_ID.put(shopId, modelLocation);
 
-                    event.register(
-                            modelLocation
-                    );
+                    event.register(modelLocation);
 
                     BigShopGuys.LOGGER.debug(
                             "Registered shop model {} for {}",
@@ -92,9 +89,8 @@ private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOC
 
     @SubscribeEvent
     public static void modifyBakingResult(ModelEvent.ModifyBakingResult event) {
-        Map<ResourceLocation, BakedModel>
-                bakedShopModels =
-                new HashMap<>();
+        Map<ResourceLocation, BakedModel> bakedShopModels = new HashMap<>();
+        Map<ResourceLocation, BakedModel> bakedModelsById = new HashMap<>();
 
         SHOP_MODEL_LOCATIONS.forEach(
                 (shopId, modelLocation) -> {
@@ -120,6 +116,29 @@ private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOC
                 }
         );
 
+        MODEL_LOCATIONS_BY_ID.forEach(
+                (modelId, modelLocation) -> {
+
+                    BakedModel model =
+                            event.getModels()
+                                    .get(modelLocation);
+
+                    if (model == null) {
+                        BigShopGuys.LOGGER.warn(
+                                "Could not load shop model {}",
+                                modelId
+                        );
+
+                        return;
+                    }
+
+                    bakedModelsById.put(
+                            modelId,
+                            model
+                    );
+                }
+        );
+
         var shopModelLocation =
                 BlockModelShaper.stateToModelLocation(
                         ModBlocks.SHOP.get()
@@ -131,7 +150,9 @@ private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOC
                         shopModelLocation,
                         (location, originalModel) ->
                                 new ShopBakeModel(
-                                        originalModel, Map.copyOf(bakedShopModels), Map.copyOf(bakedShopModels)
+                                        originalModel,
+                                        Map.copyOf(bakedShopModels),
+                                        Map.copyOf(bakedModelsById)
                                 )
                 );
 
