@@ -75,7 +75,7 @@ private static final Map<ResourceLocation, ModelResourceLocation> MODEL_LOCATION
                             );
 
                     SHOP_MODEL_LOCATIONS.put(shopId, modelLocation);
-                    MODEL_LOCATIONS_BY_ID.put(shopId, modelLocation);
+                    MODEL_LOCATIONS_BY_ID.put(modelId, modelLocation);
 
                     event.register(modelLocation);
 
