@@ -167,13 +167,6 @@ private static final Map<ResourceLocation, ModelResourceLocation> MODEL_LOCATION
                                 )
                 );
 
-        BigShopGuys.LOGGER.info(
-                "Shop item baked model present: {}",
-                event.getModels().containsKey(
-                        SHOP_ITEM_MODEL
-                )
-        );
-
         event.getModels()
                 .computeIfPresent(
                         SHOP_ITEM_MODEL,

@@ -1,11 +1,14 @@
 package com.bigchadguys.bigshopguys.client.model;
 
+import com.bigchadguys.bigshopguys.BigShopGuys;
 import com.bigchadguys.bigshopguys.component.ModDataComponents;
 import com.bigchadguys.bigshopguys.shop.ShopDefinition;
 import com.bigchadguys.bigshopguys.shop.ShopRegistries;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +51,21 @@ public class ShopItemBakedModel extends BakedModelWrapper<BakedModel> {
             }
         }
         return shopModels.getOrDefault(shopId, originalModel);
+    }
+
+    @Override
+    public @NotNull BakedModel applyTransform(
+            @NotNull ItemDisplayContext transformType,
+            @NotNull PoseStack poseStack,
+            boolean applyLeftHandTransform
+    ) {
+        originalModel.applyTransform(
+                transformType,
+                poseStack,
+                applyLeftHandTransform
+        );
+
+        return this;
     }
 
     @Override
