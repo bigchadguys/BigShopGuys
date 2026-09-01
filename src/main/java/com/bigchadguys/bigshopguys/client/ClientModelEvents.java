@@ -3,6 +3,7 @@ package com.bigchadguys.bigshopguys.client;
 import com.bigchadguys.bigshopguys.BigShopGuys;
 import com.bigchadguys.bigshopguys.block.ModBlocks;
 import com.bigchadguys.bigshopguys.client.model.ShopBakeModel;
+import com.bigchadguys.bigshopguys.client.model.ShopItemBakedModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.resources.model.BakedModel;
@@ -23,6 +24,13 @@ private static final String SHOP_MODEL_RESOURCE_PREFIX =
         "models/block/shop/";
 private static final String SHOP_MODEL_PATH_PREFIX =
         "block/shop/";
+private static final ModelResourceLocation SHOP_ITEM_MODEL =
+        ModelResourceLocation.inventory(
+                ResourceLocation.fromNamespaceAndPath(
+                        BigShopGuys.MOD_ID,
+                        "shop"
+                )
+        );
 
 private static final Map<ResourceLocation, ModelResourceLocation> SHOP_MODEL_LOCATIONS = new HashMap<>();
 private static final Map<ResourceLocation, ModelResourceLocation> MODEL_LOCATIONS_BY_ID = new HashMap<>();
@@ -139,7 +147,15 @@ private static final Map<ResourceLocation, ModelResourceLocation> MODEL_LOCATION
                 }
         );
 
+        Map<ResourceLocation, BakedModel> shopModels = Map.copyOf(bakedShopModels);
+        Map<ResourceLocation, BakedModel> modelsById = Map.copyOf(bakedModelsById);
+
         var shopModelLocation =
+                BlockModelShaper.stateToModelLocation(
+                        ModBlocks.SHOP.get()
+                                .defaultBlockState()
+                );
+        var shopBlockModelLocation =
                 BlockModelShaper.stateToModelLocation(
                         ModBlocks.SHOP.get()
                                 .defaultBlockState()
@@ -151,8 +167,19 @@ private static final Map<ResourceLocation, ModelResourceLocation> MODEL_LOCATION
                         (location, originalModel) ->
                                 new ShopBakeModel(
                                         originalModel,
-                                        Map.copyOf(bakedShopModels),
-                                        Map.copyOf(bakedModelsById)
+                                        shopModels,
+                                        modelsById
+                                )
+                );
+
+        event.getModels()
+                .computeIfPresent(
+                        SHOP_ITEM_MODEL,
+                        (location, originalModel) ->
+                                new ShopItemBakedModel(
+                                        originalModel,
+                                        shopModels,
+                                        modelsById
                                 )
                 );
 
