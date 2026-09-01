@@ -150,11 +150,6 @@ private static final Map<ResourceLocation, ModelResourceLocation> MODEL_LOCATION
         Map<ResourceLocation, BakedModel> shopModels = Map.copyOf(bakedShopModels);
         Map<ResourceLocation, BakedModel> modelsById = Map.copyOf(bakedModelsById);
 
-        var shopModelLocation =
-                BlockModelShaper.stateToModelLocation(
-                        ModBlocks.SHOP.get()
-                                .defaultBlockState()
-                );
         var shopBlockModelLocation =
                 BlockModelShaper.stateToModelLocation(
                         ModBlocks.SHOP.get()
@@ -163,7 +158,7 @@ private static final Map<ResourceLocation, ModelResourceLocation> MODEL_LOCATION
 
         event.getModels()
                 .computeIfPresent(
-                        shopModelLocation,
+                        shopBlockModelLocation,
                         (location, originalModel) ->
                                 new ShopBakeModel(
                                         originalModel,
@@ -171,6 +166,13 @@ private static final Map<ResourceLocation, ModelResourceLocation> MODEL_LOCATION
                                         modelsById
                                 )
                 );
+
+        BigShopGuys.LOGGER.info(
+                "Shop item baked model present: {}",
+                event.getModels().containsKey(
+                        SHOP_ITEM_MODEL
+                )
+        );
 
         event.getModels()
                 .computeIfPresent(
